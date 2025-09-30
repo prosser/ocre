@@ -1,0 +1,53 @@
+root = true
+
+[*.cs]
+
+# for dotnet_code_quality.ocre.* settings, the following conventions are followed during parsing:
+# For array-type (sort-order) settings:
+# 1. parsed left-to-right.
+# 2. comma-separated
+# 3. white space and '_' characters are removed during parsing, e.g. "member_kind" == "member kind" == "memberkind"
+# 4. case-insensitive
+# 5. Duplicates are ignored (first instance wins)
+# 6. Missing value behavior is controlled by the dotnet_code_quality.ocre.missing_order_values setting.
+
+# The order in which members are sorted according to their accessibility.
+# Default = public,internal,protected internal,protected,private
+dotnet_code_quality.ocre.accessibility_order = public,internal,protected internal,protected,private
+
+# Defines how missing values in sort order settings are handled.
+# If true, then the missing values are appended in default relative order.
+# If false, then the missing values are ommitted (that sort does not happen).
+dotnet_code_quality.ocre.add_missing_order_values = true
+
+# The order in which members are sorted according to their allocation modifier. "instance" = no modifier; the default.
+# Default = const,static,instance
+dotnet_code_quality.ocre.allocation_modifier_order = const,static,instance
+
+# The order in which kinds of members are sorted.
+# Default = field,constructor,event,property,operator,method,type
+dotnet_code_quality.ocre.member_order = field,constructor,event,property,operator,method,type
+
+# The order in which operators are sorted.
+# Default = conversions,unary,binary
+dotnet_code_quality.ocre.operator_order = conversions,unary,binary
+
+# The order in which binary operators are sorted.
+# Default = +, -, *, /, %, &, |, ^, <<, >>, return type, arg
+dotnet_code_quality.ocre.operator_order_binary = +,-,*,/,%,&,|,^,<<,>>,return type,arg type
+
+# The order in which conversion operators are sorted.
+# Default = implicit,explicit,return type,arg 1 type, arg 2 type
+dotnet_code_quality.ocre.operator_order_conversion = implicit,explicit,return type,arg 1 type, arg 2 type
+
+# The order in which unary operators are sorted.
+# Default = +, -, !, ~, ++, --, true, false
+dotnet_code_quality.ocre.operator_order_unary = +,-,!,~,++,--,true,false,return type,arg type
+
+# The order in which categories of sorts are applied at the root of the sorting strategy.
+# Default = member kind,accessibility,allocation,name
+dotnet_code_quality.ocre.root_order = member kind,accessibility,allocation,name
+
+# The order in which types are sorted at the file level and when nested inside another type.
+# Default = delegate,enum,interface,struct,record,class,name
+dotnet_code_quality.ocre.type_order = delegate,enum,interface,struct,record,class,name

@@ -1,0 +1,13 @@
+﻿# Generated output directories
+build/
+dist/
+bin/
+obj/
+[Dd]ebug*/
+[Rr]elease*/
+
+# logs
+*.log
+*.err
+*.out
+.vs
