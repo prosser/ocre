@@ -129,4 +129,40 @@
     <value>Type name contains lowercase letters</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="TypeOrderInFileDescription" xml:space="preserve">
+    <value>Types should be sorted correctly in the file.</value>
+  </data>
+  <data name="TypeOrderInFileMessageFormat" xml:space="preserve">
+    <value>Type '{0}' is not ordered correctly at the file level. Expected order is: {1}.</value>
+  </data>
+  <data name="TypeOrderInFileTitle" xml:space="preserve">
+    <value>Type is not ordered correctly at the file level</value>
+  </data>
+  <data name="NestedTypeOrderDescription" xml:space="preserve">
+    <value>Nested types should be sorted correctly within their containing types.</value>
+  </data>
+  <data name="NestedTypeOrderMessageFormat" xml:space="preserve">
+    <value>Nested type '{0}' is not ordered correctly within '{1}'. Expected order is: {2}.</value>
+  </data>
+  <data name="NestedTypeOrderTitle" xml:space="preserve">
+    <value>Nested type is not ordered correctly within its containing type</value>
+  </data>
+  <data name="TypeMemberOrderDescription" xml:space="preserve">
+    <value>Type members should be sorted correctly within their containing types.</value>
+  </data>
+  <data name="TypeMemberOrderMessageFormat" xml:space="preserve">
+    <value>Member '{0}' in type '{1}' is not ordered correctly. Expected order is: {2}.</value>
+  </data>
+  <data name="TypeMemberOrderTitle" xml:space="preserve">
+    <value>Type member is not ordered correctly</value>
+  </data>
+  <data name="OperatorOrderDescription" xml:space="preserve">
+    <value>Operators should be sorted according to the configured operator order.</value>
+  </data>
+  <data name="OperatorOrderMessageFormat" xml:space="preserve">
+    <value>Operator '{0}' is not ordered correctly. Expected operator order is: {1}.</value>
+  </data>
+  <data name="OperatorOrderTitle" xml:space="preserve">
+    <value>Operator is not ordered correctly</value>
+  </data>
 </root>

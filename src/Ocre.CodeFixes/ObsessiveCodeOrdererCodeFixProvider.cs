@@ -23,10 +23,12 @@ using Microsoft.CodeAnalysis.Text;
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ObsessiveCodeOrdererCodeFixProvider)), Shared]
 public class ObsessiveCodeOrdererCodeFixProvider : CodeFixProvider
 {
-    public sealed override ImmutableArray<string> FixableDiagnosticIds
-    {
-        get { return ImmutableArray.Create(OcreAnalyzer.DiagnosticId); }
-    }
+    public sealed override ImmutableArray<string> FixableDiagnosticIds { get; } =
+        ImmutableArray.Create(
+        OcreAnalyzer.Rules.TypeOrderInFileRule.Id,
+        OcreAnalyzer.Rules.NestedTypeOrderRule.Id,
+        OcreAnalyzer.Rules.MemberOrderRule.Id,
+        OcreAnalyzer.Rules.OperatorOrderRule.Id);
 
     public sealed override FixAllProvider GetFixAllProvider()
     {
@@ -66,20 +68,20 @@ public class ObsessiveCodeOrdererCodeFixProvider : CodeFixProvider
     {
         DocumentEditor editor = await DocumentEditor.CreateAsync(doc, ct).ConfigureAwait(false);
 
-        SyntaxList<MemberDeclarationSyntax> members = typeDecl.Members;
-        var segments = SegmentByDirectives(members);
-        var comparer = BuildMemberComparer(doc, typeDecl); // from settings
+        //SyntaxList<MemberDeclarationSyntax> members = typeDecl.Members;
+        //var segments = SegmentByDirectives(members);
+        //var comparer = BuildMemberComparer(doc, typeDecl); // from settings
 
-        var newSegments = segments.Select(seg =>
-        {
-            var arr = seg.ToArray();
-            Array.Sort(arr, comparer); // stable if comparer returns 0 for equals; or use OrderBy with original index
-            return SyntaxFactory.List(arr);
-        });
+        //var newSegments = segments.Select(seg =>
+        //{
+        //    var arr = seg.ToArray();
+        //    Array.Sort(arr, comparer); // stable if comparer returns 0 for equals; or use OrderBy with original index
+        //    return SyntaxFactory.List(arr);
+        //});
 
-        var newMembers = ConcatSegments(newSegments);
-        TypeDeclarationSyntax newType = typeDecl.WithMembers(newMembers).WithAdditionalAnnotations(Formatter.Annotation);
-        editor.ReplaceNode(typeDecl, newType);
+        //var newMembers = ConcatSegments(newSegments);
+        //TypeDeclarationSyntax newType = typeDecl.WithMembers(newMembers).WithAdditionalAnnotations(Formatter.Annotation);
+        //editor.ReplaceNode(typeDecl, newType);
         return editor.GetChangedDocument();
     }
 

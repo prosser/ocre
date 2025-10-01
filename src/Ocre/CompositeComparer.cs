@@ -5,10 +5,9 @@ namespace Ocre;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-internal sealed class CompositeComparer<T> : IComparer<T>
+internal sealed class CompositeComparer<T>(IEnumerable<IComparer<T>> parts) : IComparer<T>
 {
-    private readonly ImmutableArray<IComparer<T>> _parts;
-    public CompositeComparer(IEnumerable<IComparer<T>> parts) => _parts = parts.ToImmutableArray();
+    private readonly ImmutableArray<IComparer<T>> _parts = parts.ToImmutableArray();
 
     public int Compare(T? x, T? y)
     {
@@ -24,4 +23,3 @@ internal sealed class CompositeComparer<T> : IComparer<T>
         return 0; // stable: original index preserved by stable sort
     }
 }
-

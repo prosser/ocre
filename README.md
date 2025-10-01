@@ -1,12 +1,16 @@
 # OCRE `.editorconfig` Settings
 
-This document describes the `dotnet_code_quality.ocre.*` settings used for controlling member and operator sort order in C# code.
+**O**bsessive **C**ode **R**eorganization **E**ngine (OCRE) is a Roslyn analyzer and
+code fix provider that detects improperly sorted C# code and automatically sorts it
+according to user-defined preferences. Configuration is via `.editorconfig` settings.
 
 ---
 
 ## General Parsing Rules
 
-The top-level sorting strategy is configured by [dotnet_code_quality.ocre.root_order](#dotnet_code_quality.ocre.root_order).
+At the file level, [type_order](#csharp_style_ocre_type_order) is applied to sort types within the file.
+Within each type, members are sorted according to the strategies defined in [strategy_order](#csharp_style_ocre_strategy_order).
+
 All sorting strategies work in a "then by" way; i.e., the first sorting strategy is executed, and later strategies are performed only when there is equality according to the prior strategy.
 
 This is equivalent to sorting pseudo-code like this:
@@ -26,13 +30,15 @@ For all array-type settings:
    * Example: `"member_kind"` == `"member kind"` == `"memberkind"`.
 4. Parsing is **case-insensitive**.
 5. **Duplicates** are ignored (the first instance is used).
-6. **Missing values** are controlled by [dotnet_code_quality.ocre.add_missing_order_values](#dotnet_code_qualityocreadd_missing_order_values).
+6. **Missing values** are controlled by [csharp_style_ocre_add_missing_order_values](#csharp_style_ocre_add_missing_order_values).
 
 ---
 
 ## Settings
 
-### `dotnet_code_quality.ocre.accessibility_order`
+Settings are read from `.editorconfig` files using the `csharp_style_ocre_` prefix.
+
+### `csharp_style_ocre_accessibility_order`
 
 Defines the order in which members are sorted according to their declared accessibility.
 
@@ -43,11 +49,11 @@ Defines the order in which members are sorted according to their declared access
 * **`private`** → Accessible only within the containing type.
 
 **Default:**
-`dotnet_code_quality.ocre.accessibility_order = public, internal, protected internal, protected, private`
+`csharp_style_ocre_accessibility_order = public, internal, protected internal, protected, private`
 
 ---
 
-### `dotnet_code_quality.ocre.add_missing_order_values`
+### `csharp_style_ocre_add_missing_order_values`
 
 Controls how missing values in sort-order settings are handled.
 
@@ -55,11 +61,11 @@ Controls how missing values in sort-order settings are handled.
 * **`false`** → Missing values are omitted (the sort dimension is not applied).
 
 **Default:**
-`dotnet_code_quality.ocre.add_missing_order_values = true`
+`csharp_style_ocre_add_missing_order_values = true`
 
 ---
 
-### `dotnet_code_quality.ocre.allocation_modifier_order`
+### `csharp_style_ocre_allocation_modifier_order`
 
 Defines the order in which members are sorted according to their allocation modifier.
 
@@ -68,11 +74,11 @@ Defines the order in which members are sorted according to their allocation modi
 * **`instance`** → Members that belong to a specific object instance (no modifier).
 
 **Default:**
-`dotnet_code_quality.ocre.allocation_modifier_order = const, static, instance`
+`csharp_style_ocre_allocation_modifier_order = const, static, instance`
 
 ---
 
-### `dotnet_code_quality.ocre.member_order`
+### `csharp_style_ocre_member_order`
 
 Defines the order in which **member kinds** are sorted within a type.
 
@@ -85,38 +91,38 @@ Defines the order in which **member kinds** are sorted within a type.
 * **`type`** → Nested types (e.g., inner classes, structs, enums).
 
 **Default:**
-`dotnet_code_quality.ocre.member_order = field, constructor, event, property, operator, method, type`
+`csharp_style_ocre_member_order = field, constructor, event, property, operator, method, type`
 
 ---
 
-### `dotnet_code_quality.ocre.operator_order`
+### `csharp_style_ocre_operator_order`
 
 Defines the order in which **categories of operators** are sorted.
 
-* **`conversions`** → Implicit and explicit conversion operators.
+* **`conversion`** → Implicit and explicit conversion operators.
 * **`unary`** → Operators with a single operand (e.g., `!x`, `++x`).
 * **`binary`** → Operators with two operands (e.g., `x + y`).
 
 **Default:**
-`dotnet_code_quality.ocre.operator_order = conversions, unary, binary`
+`csharp_style_ocre_operator_order = conversion, unary, binary`
 
 ---
 
-### `dotnet_code_quality.ocre.operator_order_binary`
+### `csharp_style_ocre_operator_order_binary`
 
 Defines the order in which **binary operators** are sorted.
 
 * Arithmetic: `+`, `-`, `*`, `/`, `%`
 * Bitwise: `&`, `|`, `^`, `<<`, `>>`
 * **`return type`** → Orders by the declared return type of the operator.
-* **`arg type`** → Orders by the argument types of the operator.
+* **`arg 1 type`** / **`arg 2 type`** → Orders by the argument types of the operator.
 
 **Default:**
-`dotnet_code_quality.ocre.operator_order_binary = +, -, *, /, %, &, |, ^, <<, >>, return type, arg type`
+`csharp_style_ocre_operator_order_binary = +, -, *, /, %, &, |, ^, <<, >>, return type, arg 1 type, arg 2 type`
 
 ---
 
-### `dotnet_code_quality.ocre.operator_order_conversion`
+### `csharp_style_ocre_operator_order_conversion`
 
 Defines the order in which **conversion operators** are sorted.
 
@@ -127,11 +133,11 @@ Defines the order in which **conversion operators** are sorted.
 * **`arg 2 type`** → Orders by the second argument type (target type).
 
 **Default:**
-`dotnet_code_quality.ocre.operator_order_conversion = implicit, explicit, return type, arg 1 type, arg 2 type`
+`csharp_style_ocre_operator_order_conversion = implicit, explicit, return type, arg 1 type, arg 2 type`
 
 ---
 
-### `dotnet_code_quality.ocre.operator_order_unary`
+### `csharp_style_ocre_operator_order_unary`
 
 Defines the order in which **unary operators** are sorted.
 
@@ -143,25 +149,25 @@ Defines the order in which **unary operators** are sorted.
 * **`arg type`** → Orders by the argument type of the operator.
 
 **Default:**
-`dotnet_code_quality.ocre.operator_order_unary = +, -, !, ~, ++, --, true, false, return type, arg type`
+`csharp_style_ocre_operator_order_unary = +, -, !, ~, ++, --, true, false, return type, arg type`
 
 ---
 
-### `dotnet_code_quality.ocre.root_order`
+### `csharp_style_ocre_strategy_order`
 
-Defines the order in which **strategies of sorts** are applied at the root of a type being sorted.
+Defines the order in which strategies are applied for a type being sorted.
 
-* **`member kind`** → [member_order](#dotnet_code_quality.ocre.member_order) strategy.
-* **`accessibility`** → [accessibility_order](#dotnet_code_quality.ocre.accessibility_order) strategy.
-* **`allocation`** → [allocation_modifier_order](#dotnet_code_quality.ocre.allocation_modifier_order) strategy.
+* **`member kind`** → [csharp_style_ocre_member_order](#csharp_style_ocre_member_order) strategy.
+* **`accessibility`** → [csharp_style_ocre_accessibility_order](#csharp_style_ocre_accessibility_order) strategy.
+* **`allocation`** → [csharp_style_ocre_allocation_modifier_order](#csharp_style_ocre_allocation_modifier_order) strategy.
 * **`name`** → Alphabetical or lexical ordering by identifier.
 
 **Default:**
-`dotnet_code_quality.ocre.root_order = member kind, accessibility, allocation, name`
+`csharp_style_ocre_strategy_order = member kind, accessibility, allocation, name`
 
 ---
 
-### `dotnet_code_quality.ocre.type_order`
+### `csharp_style_ocre_type_order`
 
 Defines the order in which **types** are sorted at the file level or when nested inside another type.
 
@@ -174,21 +180,34 @@ Defines the order in which **types** are sorted at the file level or when nested
 * **`name`** → Alphabetical or lexical ordering by identifier.
 
 **Default:**
-`dotnet_code_quality.ocre.type_order = delegate, enum, interface, struct, record, class, name`
+`csharp_style_ocre_type_order = delegate, enum, interface, struct, record, class, name`
+
+---
+
+## Diagnostics
+
+Use the following diagnostic IDs in `.editorconfig` to control severities.
+
+* OCRE1000: Types should be sorted correctly in the file.
+* OCRE1001: Nested types should be sorted correctly within their containing types.
+* OCRE1002: Type members should be sorted correctly.
+* OCRE1003: Operators should be sorted correctly.
+
+You can set per-rule severity with the standard `dotnet_diagnostic.<ID>.severity` key.
 
 ---
 
 ## Defaults Quick Reference
 
 ```
-dotnet_code_quality.ocre.accessibility_order = public, internal, protected internal, protected, private
-dotnet_code_quality.ocre.add_missing_order_values = true
-dotnet_code_quality.ocre.allocation_modifier_order = const, static, instance
-dotnet_code_quality.ocre.member_order = field, constructor, event, property, operator, method, type
-dotnet_code_quality.ocre.operator_order = conversions, unary, binary
-dotnet_code_quality.ocre.operator_order_binary = +, -, *, /, %, &, | , ^, <<, >>, return type, arg 
-dotnet_code_quality.ocre.operator_order_conversion = implicit, explicit, return type, arg 1 type, arg 2 type
-dotnet_code_quality.ocre.operator_order_unary = +, -, !, ~, ++, --, true, false, return type, arg type
-dotnet_code_quality.ocre.root_order = member kind, accessibility, allocation, name
-dotnet_code_quality.ocre.type_order = delegate, enum, interface, struct, record, class, name
+csharp_style_ocre_accessibility_order = public, internal, protected internal, protected, protected private, private
+csharp_style_ocre_add_missing_order_values = true
+csharp_style_ocre_allocation_modifier_order = const, static, instance
+csharp_style_ocre_member_order = field, constructor, event, property, operator, method, type
+csharp_style_ocre_operator_order = conversion, unary, binary
+csharp_style_ocre_operator_order_binary = +, -, *, /, %, &, | , ^, <<, >>, return type, arg 1 type, arg 2 type
+csharp_style_ocre_operator_order_conversion = implicit, explicit, return type, arg 1 type, arg 2 type
+csharp_style_ocre_operator_order_unary = +, -, !, ~, ++, --, true, false, return type, arg type
+csharp_style_ocre_strategy_order = member kind, accessibility, allocation, name
+csharp_style_ocre_type_order = delegate, enum, interface, struct, record, class, name
 ```

@@ -86,5 +86,113 @@ namespace Ocre {
                 return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nested types should be sorted correctly within their containing types..
+        /// </summary>
+        internal static string NestedTypeOrderDescription {
+            get {
+                return ResourceManager.GetString("NestedTypeOrderDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nested type &apos;{0}&apos; is not ordered correctly within &apos;{1}&apos;. Expected order is: {2}..
+        /// </summary>
+        internal static string NestedTypeOrderMessageFormat {
+            get {
+                return ResourceManager.GetString("NestedTypeOrderMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nested type is not ordered correctly within its containing type.
+        /// </summary>
+        internal static string NestedTypeOrderTitle {
+            get {
+                return ResourceManager.GetString("NestedTypeOrderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operators should be sorted according to the configured operator order..
+        /// </summary>
+        internal static string OperatorOrderDescription {
+            get {
+                return ResourceManager.GetString("OperatorOrderDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator &apos;{0}&apos; is not ordered correctly. Expected operator order is: {1}..
+        /// </summary>
+        internal static string OperatorOrderMessageFormat {
+            get {
+                return ResourceManager.GetString("OperatorOrderMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator is not ordered correctly.
+        /// </summary>
+        internal static string OperatorOrderTitle {
+            get {
+                return ResourceManager.GetString("OperatorOrderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type members should be sorted correctly within their containing types..
+        /// </summary>
+        internal static string TypeMemberOrderDescription {
+            get {
+                return ResourceManager.GetString("TypeMemberOrderDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member &apos;{0}&apos; in type &apos;{1}&apos; is not ordered correctly. Expected order is: {2}..
+        /// </summary>
+        internal static string TypeMemberOrderMessageFormat {
+            get {
+                return ResourceManager.GetString("TypeMemberOrderMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type member is not ordered correctly.
+        /// </summary>
+        internal static string TypeMemberOrderTitle {
+            get {
+                return ResourceManager.GetString("TypeMemberOrderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Types should be sorted correctly in the file..
+        /// </summary>
+        internal static string TypeOrderInFileDescription {
+            get {
+                return ResourceManager.GetString("TypeOrderInFileDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type &apos;{0}&apos; is not ordered correctly at the file level. Expected order is: {1}..
+        /// </summary>
+        internal static string TypeOrderInFileMessageFormat {
+            get {
+                return ResourceManager.GetString("TypeOrderInFileMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type is not ordered correctly at the file level.
+        /// </summary>
+        internal static string TypeOrderInFileTitle {
+            get {
+                return ResourceManager.GetString("TypeOrderInFileTitle", resourceCulture);
+            }
+        }
     }
 }
