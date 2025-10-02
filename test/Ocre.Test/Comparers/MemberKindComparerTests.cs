@@ -2,15 +2,23 @@
 
 namespace Ocre.Test.Comparers;
 
+extern alias Analyzers;
+
 using Microsoft.CodeAnalysis.CSharp;
 
-using Ocre.Comparers;
-using Ocre.Configuration;
+using Analyzers.Ocre.Comparers;
+using Analyzers.Ocre.Configuration;
 
 using Xunit;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 public class MemberKindComparerTests
 {
+    private static MemberDeclarationSyntax ParseMember(string code)
+    {
+        return SyntaxFactory.ParseMemberDeclaration(code) ?? throw new System.Exception("Failed to parse member");
+    }
+
     [Fact]
     public void OrdersAccordingToConfig()
     {
@@ -27,13 +35,13 @@ public class MemberKindComparerTests
             ]
         };
 
-        CSharpSyntaxNode field = SyntaxFactory.ParseMemberDeclaration("int f;");
-        CSharpSyntaxNode ctor = SyntaxFactory.ParseMemberDeclaration("public C() { }");
-        CSharpSyntaxNode ev = SyntaxFactory.ParseMemberDeclaration("public event System.EventHandler E; ");
-        CSharpSyntaxNode prop = SyntaxFactory.ParseMemberDeclaration("public int P { get; set; }");
-        CSharpSyntaxNode op = SyntaxFactory.ParseMemberDeclaration("public static C operator +(C a, C b) => a; ");
-        CSharpSyntaxNode method = SyntaxFactory.ParseMemberDeclaration("public void M() { }");
-        CSharpSyntaxNode type = SyntaxFactory.ParseMemberDeclaration("class D { }");
+        MemberDeclarationSyntax field = ParseMember("int f;");
+        MemberDeclarationSyntax ctor = ParseMember("public C() { }");
+        MemberDeclarationSyntax ev = ParseMember("public event System.EventHandler E; ");
+        MemberDeclarationSyntax prop = ParseMember("public int P { get; set; }");
+        MemberDeclarationSyntax op = ParseMember("public static C operator +(C a, C b) => a; ");
+        MemberDeclarationSyntax method = ParseMember("public void M() { }");
+        MemberDeclarationSyntax type = ParseMember("class D { }");
 
         var cmp = new MemberKindComparer(cfg);
 

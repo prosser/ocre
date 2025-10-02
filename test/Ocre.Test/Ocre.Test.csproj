@@ -5,6 +5,7 @@
 
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +30,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ocre.CodeFixes\Ocre.CodeFixes.csproj" />
-    <ProjectReference Include="..\..\src\Ocre\Ocre.csproj" />
+    <ProjectReference Include="..\..\src\Ocre\Ocre.csproj">
+      <Aliases>Analyzers</Aliases>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

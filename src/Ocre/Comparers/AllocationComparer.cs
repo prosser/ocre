@@ -15,8 +15,13 @@ using Ocre.Configuration;
 /// Compares the allocation type of two members, e.g., static vs const vs instance.
 /// </summary>
 /// <param name="config"></param>
-internal class MemberAllocationComparer(OcreConfiguration config) : IComparer<MemberDeclarationSyntax>
+internal class MemberAllocationComparer(OcreConfiguration config) : IComparer<CSharpSyntaxNode>, IComparer<MemberDeclarationSyntax>
 {
+    public int Compare(CSharpSyntaxNode x, CSharpSyntaxNode y)
+    {
+        return Compare((MemberDeclarationSyntax)x, (MemberDeclarationSyntax)y);
+    }
+
     /// <summary>
     /// Compares two members by their allocation type.
     /// </summary>

@@ -9,6 +9,7 @@ internal enum TypeTokenType
     Interface,
     Struct,
     Record,
+    RecordStruct,
     Class,
     Name,
 }

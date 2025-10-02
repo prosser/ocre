@@ -2,7 +2,11 @@
 
 namespace Ocre.Test.Comparers;
 
+extern alias Analyzers;
+
 using System.Collections.Generic;
+
+using Analyzers.Ocre.Comparers;
 
 using Xunit;
 

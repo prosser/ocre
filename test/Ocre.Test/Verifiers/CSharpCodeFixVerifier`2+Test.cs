@@ -2,6 +2,9 @@
 
 namespace Ocre.Test.Verifiers;
 
+using System;
+
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -17,7 +20,9 @@ public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         {
             SolutionTransforms.Add((solution, projectId) =>
             {
-                Microsoft.CodeAnalysis.CompilationOptions compilationOptions = solution.GetProject(projectId).CompilationOptions;
+                CompilationOptions compilationOptions = solution.GetProject(projectId)?.CompilationOptions
+                    ?? throw new InvalidOperationException();
+
                 compilationOptions = compilationOptions.WithSpecificDiagnosticOptions(
                     compilationOptions.SpecificDiagnosticOptions.SetItems(CSharpVerifierHelper.NullableWarnings));
                 solution = solution.WithProjectCompilationOptions(projectId, compilationOptions);

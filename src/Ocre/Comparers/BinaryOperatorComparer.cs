@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Ocre.Configuration;
 
-internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? semanticModel = null) : IComparer<OperatorDeclarationSyntax>
+internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? semanticModel = null) : IComparer<CSharpSyntaxNode>, IComparer<OperatorDeclarationSyntax>
 {
     private readonly OperatorKeyCache<BinaryOperatorTokenType> cache = new(config, semanticModel);
 
@@ -20,6 +21,11 @@ internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? s
         ReturnType,
         ParamType0,
         ParamType1,
+    }
+
+    public int Compare(CSharpSyntaxNode x, CSharpSyntaxNode y)
+    {
+        return Compare((OperatorDeclarationSyntax)x, (OperatorDeclarationSyntax)y);
     }
 
     public int Compare(OperatorDeclarationSyntax x, OperatorDeclarationSyntax y)

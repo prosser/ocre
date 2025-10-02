@@ -1,4 +1,4 @@
-﻿// <copyright file="OcreSettings.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
+﻿// <copyright file="OcreConfiguration.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
 
 namespace Ocre.Configuration;
 
@@ -8,8 +8,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-using Ocre;
-
 internal class OcreConfiguration
 {
     /// <summary>
@@ -17,6 +15,13 @@ internal class OcreConfiguration
     /// </summary>
     /// <remarks>Default = public,internal,protected internal,protected,private protected,private</remarks>
     public Accessibility[] AccessibilityOrder { get; set; } = [];
+
+    /// <summary>
+    /// Defines how missing values in sort order settings are handled.
+    /// If <see langword="true"/>, any values not explicitly specified in the setting are added to the end of the order in their default order.
+    /// If <see langword="false"/>, any values not explicitly specified are treated as equal and sorted by their original order in the source file.
+    /// </summary>
+    public bool AddMissingOrderValues { get; set; } = true;
 
     /// <summary>
     /// The order in which members are sorted according to their allocation modifier.
@@ -35,9 +40,6 @@ internal class OcreConfiguration
     /// <remarks>Default = field,constructor,event,property,operator,method,type</remarks>
     public MemberKind[] MemberOrder { get; set; } = [];
 
-    /// <summary>The severity of diagnostics raised for ordering violations of nested types.</summary>
-    public DiagnosticSeverity NestedTypeOrderSeverity { get; set; } = DiagnosticSeverity.Warning;
-
     /// <summary>The order in which operators are sorted.</summary>
     /// <remarks>Default = conversions,unary,binary</remarks>
     public OperatorKind[] OperatorOrder { get; set; } = [];
@@ -50,15 +52,6 @@ internal class OcreConfiguration
     /// Default = delegate,enum,interface,struct,record,class,name
     public TypeTokenType[] TypeOrder { get; set; } = [];
 
-    /// <summary>The severity of diagnostics raised for ordering violations of types in a file.</summary>
-    public DiagnosticSeverity TypeOrderInFileSeverity { get; set; } = DiagnosticSeverity.Warning;
-
-    /// <summary>The severity of diagnostics raised for ordering violations of members within a type.</summary>
-    public DiagnosticSeverity MemberOrderSeverity { get; set; } = DiagnosticSeverity.Warning;
-
-    /// <summary>The severity of diagnostics raised for ordering violations of operator overloads within a type.</summary>
-    public DiagnosticSeverity OperatorOrderSeverity { get; set; } = DiagnosticSeverity.Warning;
-
     /// <summary>The order in which unary operators are sorted.</summary>
     /// <remarks>Default = +, -, !, ~, ++, --, true, false</remarks>
     public UnaryOperatorTokenType[] UnaryOperatorOrder { get; set; } = [];
@@ -66,20 +59,18 @@ internal class OcreConfiguration
     public static OcreConfiguration Read(AnalyzerConfigOptionsProvider provider, SyntaxTree tree)
     {
         AnalyzerConfigOptions cfg = provider.GetOptions(tree);
+        bool addMissing = cfg.TryGetValue("csharp_style_ocre_add_missing_order_values", out string? rawAddMissing) &&
+            bool.TryParse(rawAddMissing, out bool parsedAddMissing) &&
+            parsedAddMissing;
 
         return new OcreConfiguration
         {
-            AccessibilityOrder = ReadArraySetting<Accessibility>(cfg, "accessibility_order", TryParseAccessibility),
-            AllocationModifierOrder = ReadArraySetting<AllocationModifierTokenType>(cfg, "allocation_modifier_order"),
-            MemberOrder = ReadArraySetting<MemberKind>(cfg, "member_order"),
-            OperatorOrder = ReadArraySetting<OperatorKind>(cfg, "operator_order"),
-            SortOrder = ReadArraySetting<SortStrategyKind>(cfg, "strategy_order"),
-            TypeOrder = ReadArraySetting<TypeTokenType>(cfg, "type_order"),
-
-            TypeOrderInFileSeverity = TryReadSeveritySetting(cfg, OcreAnalyzer.Rules.TypeOrderInFileRule.Id),
-            NestedTypeOrderSeverity = TryReadSeveritySetting(cfg, OcreAnalyzer.Rules.NestedTypeOrderRule.Id),
-            MemberOrderSeverity = TryReadSeveritySetting(cfg, OcreAnalyzer.Rules.MemberOrderRule.Id),
-            OperatorOrderSeverity = TryReadSeveritySetting(cfg, OcreAnalyzer.Rules.OperatorOrderRule.Id),
+            AccessibilityOrder = ReadArraySetting(cfg, "accessibility_order", addMissing, TryParseAccessibility),
+            AllocationModifierOrder = ReadArraySetting<AllocationModifierTokenType>(cfg, "allocation_modifier_order", addMissing),
+            MemberOrder = ReadArraySetting<MemberKind>(cfg, "member_order", addMissing),
+            OperatorOrder = ReadArraySetting<OperatorKind>(cfg, "operator_order", addMissing),
+            SortOrder = ReadArraySetting<SortStrategyKind>(cfg, "strategy_order", addMissing),
+            TypeOrder = ReadArraySetting<TypeTokenType>(cfg, "type_order", addMissing),
         };
     }
 
@@ -97,25 +88,13 @@ internal class OcreConfiguration
         };
     }
 
-    private static DiagnosticSeverity TryReadSeveritySetting(AnalyzerConfigOptions cfg, string diagnosticId)
-    {
-        const string SeverityPrefix = "dotnet_diagnostic.";
-        const string SeveritySuffix = ".severity";
-
-        if (cfg.TryGetValue($"{SeverityPrefix}{diagnosticId.ToLowerInvariant()}{SeveritySuffix}", out string? raw) &&
-            Enum.TryParse(raw, true, out DiagnosticSeverity severity))
-        {
-            return severity;
-        }
-
-        return DiagnosticSeverity.Warning;
-    }
-
-    private static T[] ReadArraySetting<T>(AnalyzerConfigOptions cfg, string key, Func<string, T?>? parse = null)
+    private static T[] ReadArraySetting<T>(AnalyzerConfigOptions cfg, string key, bool addMissing, Func<string, T?>? parse = null)
         where T : struct, Enum
     {
         const string ConfigPrefix = "csharp_style_ocre_";
         parse ??= EnumParser.Parse<T>;
+
+        var defaults = (T[])Enum.GetValues(typeof(T));
 
         T[]? result = null;
         if (cfg.TryGetValue($"{ConfigPrefix}{key}", out string? raw))
@@ -123,9 +102,10 @@ internal class OcreConfiguration
             T[]? specified = raw?
                 .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(parse)
-                .Distinct()
                 .Where(x => x.HasValue)
                 .Select(x => x!.Value)
+                .Concat(addMissing ? defaults : []) // add missing values at the end if configured to do so
+                .Distinct() // remove duplicates, preserving order
                 .ToArray();
 
             if (specified is { Length: > 0 })
@@ -136,7 +116,7 @@ internal class OcreConfiguration
 
         return result is { Length: > 0 }
             ? result
-            : (T[])Enum.GetValues(typeof(T));
+            : defaults;
     }
 }
 

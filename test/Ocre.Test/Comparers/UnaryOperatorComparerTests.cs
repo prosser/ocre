@@ -2,11 +2,15 @@
 
 namespace Ocre.Test.Comparers;
 
+extern alias Analyzers;
+
+using System;
+
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Ocre.Comparers;
-using Ocre.Configuration;
+using Analyzers.Ocre.Comparers;
+using Analyzers.Ocre.Configuration;
 
 using Xunit;
 
@@ -20,8 +24,12 @@ public class UnaryOperatorComparerTests
             UnaryOperatorOrder = [UnaryOperatorTokenType.Plus, UnaryOperatorTokenType.Minus, UnaryOperatorTokenType.Negate, UnaryOperatorTokenType.Complement, UnaryOperatorTokenType.Increment, UnaryOperatorTokenType.Decrement, UnaryOperatorTokenType.True, UnaryOperatorTokenType.False]
         };
 
-        var unaryPlus = (OperatorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration("public static C operator +(C a) => a;");
-        var unaryMinus = (OperatorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration("public static C operator -(C a) => a;");
+        static OperatorDeclarationSyntax Parse(string code)
+            => SyntaxFactory.ParseMemberDeclaration(code) as OperatorDeclarationSyntax
+               ?? throw new InvalidOperationException();
+
+        OperatorDeclarationSyntax unaryPlus = Parse("public static C operator +(C a) => a;");
+        OperatorDeclarationSyntax unaryMinus = Parse("public static C operator -(C a) => a;");
 
         var cmp = new UnaryOperatorComparer(cfg);
 

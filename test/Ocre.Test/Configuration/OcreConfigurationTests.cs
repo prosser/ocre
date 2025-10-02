@@ -2,13 +2,16 @@
 
 namespace Ocre.Test.Configuration;
 
+extern alias Analyzers;
+
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-using Ocre.Configuration;
+using Analyzers.Ocre.Configuration;
 
 using Xunit;
 
@@ -58,9 +61,14 @@ public class OcreConfigurationTests
         Assert.NotEmpty(cfg.TypeOrder);
     }
 
-    private sealed class TestAnalyzerConfigOptionsProvider(Dictionary<string, string> values) : AnalyzerConfigOptionsProvider
+    private sealed class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
     {
-        private readonly AnalyzerConfigOptions options = new TestAnalyzerConfigOptions(values);
+        private readonly AnalyzerConfigOptions options;
+
+        public TestAnalyzerConfigOptionsProvider(Dictionary<string, string> values)
+        {
+            options = new TestAnalyzerConfigOptions(values);
+        }
 
         public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => options;
         public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => options;
@@ -68,11 +76,16 @@ public class OcreConfigurationTests
         public override AnalyzerConfigOptions GlobalOptions => options;
     }
 
-    private sealed class TestAnalyzerConfigOptions(Dictionary<string, string> values) : AnalyzerConfigOptions
+    private sealed class TestAnalyzerConfigOptions : AnalyzerConfigOptions
     {
-        private readonly Dictionary<string, string> values = values ?? [];
+        private readonly Dictionary<string, string> values;
 
-        public override bool TryGetValue(string key, out string value)
+        public TestAnalyzerConfigOptions(Dictionary<string, string> values)
+        {
+            this.values = values ?? [];
+        }
+
+        public override bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
         {
             return values.TryGetValue(key, out value);
         }

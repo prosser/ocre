@@ -2,13 +2,16 @@
 
 namespace Ocre.Test.Comparers;
 
+extern alias Analyzers;
+
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-using Ocre.Comparers;
-using Ocre.Configuration;
+using Analyzers.Ocre.Comparers;
+using Analyzers.Ocre.Configuration;
 
 using Xunit;
+using System;
 
 public class OperatorKindComparerTests
 {
@@ -20,9 +23,17 @@ public class OperatorKindComparerTests
             OperatorOrder = [OperatorKind.Conversion, OperatorKind.Unary, OperatorKind.Binary]
         };
 
-        var conv = (ConversionOperatorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration("public static implicit operator int(C c) => 0;");
-        var unary = (OperatorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration("public static C operator +(C a) => a;");
-        var binary = (OperatorDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration("public static C operator +(C a, C b) => a;");
+        ConversionOperatorDeclarationSyntax ParseConversion(string code) =>
+            SyntaxFactory.ParseMemberDeclaration(code) as ConversionOperatorDeclarationSyntax
+            ?? throw new InvalidOperationException();
+
+        OperatorDeclarationSyntax ParseOperator(string code) =>
+            SyntaxFactory.ParseMemberDeclaration(code) as OperatorDeclarationSyntax
+            ?? throw new InvalidOperationException();
+
+        ConversionOperatorDeclarationSyntax conv = ParseConversion("public static implicit operator int(C c) => 0;");
+        OperatorDeclarationSyntax unary = ParseOperator("public static C operator +(C a) => a;");
+        OperatorDeclarationSyntax binary = ParseOperator("public static C operator +(C a, C b) => a;");
 
         var cmp = new OperatorKindComparer(cfg);
 

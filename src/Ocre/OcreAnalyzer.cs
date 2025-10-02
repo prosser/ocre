@@ -8,8 +8,10 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
+using Ocre.Comparers;
 using Ocre.Configuration;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -99,13 +101,49 @@ public class OcreAnalyzer : DiagnosticAnalyzer
 
     private void AnalyzeTypesInFileOrdering(OcreConfiguration settings, SyntaxNodeAnalysisContext context)
     {
-        SyntaxNode nsNode = context.Node;
+        var nsNode = (CSharpSyntaxNode)context.Node;
 
-        Queue<SortStrategyKind> topQueue = new(settings.SortOrder);
-        while (topQueue.Count > 0)
+        // Get all the type declarations directly within this namespace declaration, or within the compilation unit if this is the global namespace
+        CSharpSyntaxNode[] types = [.. nsNode
+            .ChildNodes()
+            .Where(n => n is TypeDeclarationSyntax or EnumDeclarationSyntax or DelegateDeclarationSyntax)
+            .Cast<CSharpSyntaxNode>()];
+
+        if (types.Length < 2)
         {
-
+            return; // trivially ordered
         }
+
+        TypeDeclarationComparer comparer = new(settings, context.SemanticModel);
+
+        // Pre-compute expected order string for message (configuration order tokens)
+        string expectedOrder = string.Join(", ", settings.TypeOrder.Select(t => t.ToString().ToLowerInvariant()));
+
+        // Find all out-of-order types (report the later node in each violating pair)
+        for (int i = 1; i < types.Length; i++)
+        {
+            CSharpSyntaxNode current = types[i];
+            CSharpSyntaxNode previous = types[i - 1];
+            if (comparer.Compare(previous, current) > 0)
+            {
+                string typeName = GetDisplayName(current);
+                context.ReportDiagnostic(Diagnostic.Create(Rules.TypeOrderInFileRule, current.GetLocation(), typeName, expectedOrder));
+            }
+        }
+    }
+
+    private static string GetDisplayName(CSharpSyntaxNode node)
+    {
+        return node switch
+        {
+            ClassDeclarationSyntax cds => cds.Identifier.Text,
+            StructDeclarationSyntax sds => sds.Identifier.Text,
+            InterfaceDeclarationSyntax ids => ids.Identifier.Text,
+            EnumDeclarationSyntax eds => eds.Identifier.Text,
+            RecordDeclarationSyntax rds => rds.Identifier.Text,
+            DelegateDeclarationSyntax dds => dds.Identifier.Text,
+            _ => node.Kind().ToString(),
+        };
     }
 
     private static void AnalyzeSymbol(SymbolAnalysisContext context)

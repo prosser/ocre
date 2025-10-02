@@ -12,26 +12,30 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Ocre.Configuration;
 
-internal class MemberAccessibilityComparer(OcreConfiguration config) : IComparer<MemberDeclarationSyntax>
+internal class MemberAccessibilityComparer(OcreConfiguration config) : IComparer<CSharpSyntaxNode>, IComparer<MemberDeclarationSyntax>
 {
     private readonly AccessibilityComparer accessibilityComparer = new(config);
+
+    public int Compare(CSharpSyntaxNode x, CSharpSyntaxNode y)
+    {
+        return Compare((MemberDeclarationSyntax)x, (MemberDeclarationSyntax)y);
+    }
 
     public int Compare(MemberDeclarationSyntax x, MemberDeclarationSyntax y)
     {
         Accessibility ax = GetMemberAccessibility(x);
         Accessibility ay = GetMemberAccessibility(y);
-
         return accessibilityComparer.Compare(ax, ay);
     }
 
-    private static Accessibility GetMemberAccessibility(MemberDeclarationSyntax node)
+    private static Accessibility GetMemberAccessibility(CSharpSyntaxNode node)
     {
-        if (node is null)
+        if (node is not MemberDeclarationSyntax syntax)
         {
-            throw new ArgumentNullException(nameof(node));
+            throw new ArgumentNullException(nameof(syntax));
         }
 
-        SyntaxTokenList mods = node.Modifiers;
+        SyntaxTokenList mods = syntax.Modifiers;
         bool isPublic = mods.Any(t => t.IsKind(SyntaxKind.PublicKeyword));
         bool isInternal = mods.Any(t => t.IsKind(SyntaxKind.InternalKeyword));
         bool isProtected = mods.Any(t => t.IsKind(SyntaxKind.ProtectedKeyword));
@@ -68,7 +72,7 @@ internal class MemberAccessibilityComparer(OcreConfiguration config) : IComparer
         }
 
         // If member is declared in an interface, members are implicitly public
-        if (node.Parent is InterfaceDeclarationSyntax)
+        if (syntax.Parent is InterfaceDeclarationSyntax)
         {
             return Accessibility.Public;
         }

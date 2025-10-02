@@ -11,9 +11,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Ocre.Configuration;
 
-internal class TypeAccessibilityComparer(OcreConfiguration config) : IComparer<TypeDeclarationSyntax>
+internal class TypeAccessibilityComparer(OcreConfiguration config) : IComparer<CSharpSyntaxNode>, IComparer<TypeDeclarationSyntax>
 {
     private readonly AccessibilityComparer accessibilityComparer = new(config);
+
+    public int Compare(CSharpSyntaxNode x, CSharpSyntaxNode y)
+    {
+        return Compare((TypeDeclarationSyntax)x, (TypeDeclarationSyntax)y);
+    }
 
     public int Compare(TypeDeclarationSyntax x, TypeDeclarationSyntax y)
     {
