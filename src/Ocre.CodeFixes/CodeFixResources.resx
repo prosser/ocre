@@ -121,4 +121,8 @@
     <value>Make uppercase</value>
     <comment>The title of the code fix. </comment>
   </data>
+  <data name="SortTypesInFileTitle" xml:space="preserve">
+    <value>Sort types</value>
+    <comment>The title of the code fix to sort types at the file level.</comment>
+  </data>
 </root>

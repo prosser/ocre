@@ -1,8 +1,8 @@
-﻿// <copyright file="OperatorOrder.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
+﻿// <copyright file="OperatorKind.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
 
 namespace Ocre.Configuration;
 
-internal enum OperatorKind
+public enum OperatorKind
 {
     Conversion = 0,
     Explicit,

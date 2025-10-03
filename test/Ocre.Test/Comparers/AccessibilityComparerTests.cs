@@ -4,10 +4,10 @@ namespace Ocre.Test.Comparers;
 
 extern alias Analyzers;
 
-using Microsoft.CodeAnalysis;
-
 using Analyzers.Ocre.Comparers;
 using Analyzers.Ocre.Configuration;
+
+using Microsoft.CodeAnalysis;
 
 using Xunit;
 

@@ -1,8 +1,8 @@
-﻿// <copyright file="MemberOrder.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
+﻿// <copyright file="MemberKind.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
 
 namespace Ocre.Configuration;
 
-internal enum MemberKind
+public enum MemberKind
 {
     Field = 0,
     Constructor,

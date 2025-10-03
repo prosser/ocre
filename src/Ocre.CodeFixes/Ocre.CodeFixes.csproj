@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>Ocre</RootNamespace>
     <LangVersion>13.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

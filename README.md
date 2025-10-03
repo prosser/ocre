@@ -188,10 +188,10 @@ Defines the order in which **types** are sorted at the file level or when nested
 
 Use the following diagnostic IDs in `.editorconfig` to control severities.
 
-* OCRE1000: Types should be sorted correctly in the file.
-* OCRE1001: Nested types should be sorted correctly within their containing types.
-* OCRE1002: Type members should be sorted correctly.
-* OCRE1003: Operators should be sorted correctly.
+* OC1000: Types should be sorted correctly in the file.
+* OC1001: Nested types should be sorted correctly within their containing types.
+* OC1002: Type members should be sorted correctly.
+* OC1003: Operators should be sorted correctly.
 
 You can set per-rule severity with the standard `dotnet_diagnostic.<ID>.severity` key.
 

@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Ocre.Configuration;
 
-internal class TypeDeclarationComparer(OcreConfiguration config, SemanticModel? semanticModel) : IComparer<CSharpSyntaxNode>
+public class TypeDeclarationComparer(OcreConfiguration config, SemanticModel? semanticModel) : IComparer<CSharpSyntaxNode>
 {
     private readonly TypeNameComparer nameComparer = new(semanticModel);
 

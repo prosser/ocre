@@ -2,7 +2,7 @@
 
 namespace Ocre.Configuration;
 
-internal enum AllocationModifierTokenType
+public enum AllocationModifierTokenType
 {
     Const = 0,
     Static,

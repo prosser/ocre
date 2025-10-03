@@ -54,14 +54,14 @@ csharp_style_ocre_type_order = delegate,enum,interface,struct,record,class,name
 
 # Diagnostic severity settings
 
-## OCRE1000: Types should be sorted correctly in the file.
-dotnet_diagnostic.OCRE1000.severity = warning
+## OC1000: Types should be sorted correctly in the file.
+dotnet_diagnostic.OC1000.severity = warning
 
-## OCRE1001: Nested types should be sorted correctly within their containing types.
-dotnet_diagnostic.OCRE1001.severity = warning
+## OC1001: Nested types should be sorted correctly within their containing types.
+dotnet_diagnostic.OC1001.severity = warning
 
-## OCRE1002: Type members should be sorted correctly.
-dotnet_diagnostic.OCRE1002.severity = warning
+## OC1002: Type members should be sorted correctly.
+dotnet_diagnostic.OC1002.severity = warning
 
-## OCRE1003: Operators should be sorted correctly.
-dotnet_diagnostic.OCRE1003.severity = warning
+## OC1003: Operators should be sorted correctly.
+dotnet_diagnostic.OC1003.severity = warning

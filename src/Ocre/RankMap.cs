@@ -1,4 +1,4 @@
-﻿// <copyright file="FileName.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
+﻿// <copyright file="RankMap.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
 
 namespace Ocre;
 using System;

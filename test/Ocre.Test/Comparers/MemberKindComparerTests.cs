@@ -4,13 +4,13 @@ namespace Ocre.Test.Comparers;
 
 extern alias Analyzers;
 
-using Microsoft.CodeAnalysis.CSharp;
-
 using Analyzers.Ocre.Comparers;
 using Analyzers.Ocre.Configuration;
 
-using Xunit;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using Xunit;
 
 public class MemberKindComparerTests
 {

@@ -8,7 +8,6 @@ using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using Ocre.Comparers;
@@ -19,10 +18,19 @@ public class OcreAnalyzer : DiagnosticAnalyzer
 {
     public static class Rules
     {
-        private const string IdPrefix = "OCRE";
+        private const string IdPrefix = "OC";
 
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localizable, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
+
+        public static readonly DiagnosticDescriptor TracingRule = new(
+                   id: IdPrefix + "0001",
+                   title: "Trace",
+                   messageFormat: "{0}",
+                   category: "Style",
+                   defaultSeverity: DiagnosticSeverity.Info,
+                   isEnabledByDefault: true,
+                   description: "Trace.");
 
         public static readonly DiagnosticDescriptor TypeOrderInFileRule = new(
             id: IdPrefix + "1000",
@@ -63,6 +71,7 @@ public class OcreAnalyzer : DiagnosticAnalyzer
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
     [
+        Rules.TracingRule,
         Rules.TypeOrderInFileRule,
         Rules.NestedTypeOrderRule,
         Rules.MemberOrderRule,
@@ -76,48 +85,47 @@ public class OcreAnalyzer : DiagnosticAnalyzer
 
         context.RegisterCompilationStartAction(cStart =>
         {
+            Compilation compilation = cStart.Compilation;
             AnalyzerConfigOptionsProvider provider = cStart.Options.AnalyzerConfigOptionsProvider;
 
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
 
-            cStart.RegisterSyntaxNodeAction(ctx =>
-            {
-                var settings = OcreConfiguration.Read(provider, ctx.Node.SyntaxTree);
-                AnalyzeIntraTypeSorting(settings, ctx);
-            }, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
+            //cStart.RegisterSyntaxNodeAction(ctx =>
+            //{
+            //    var settings = OcreConfiguration.Read(provider, ctx.Node.SyntaxTree);
+            //    AnalyzeIntraTypeSorting(settings, ctx);
+            //}, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
 
-            cStart.RegisterSyntaxNodeAction(ctx =>
+            cStart.RegisterSemanticModelAction(ctx =>
             {
-                var settings = OcreConfiguration.Read(provider, ctx.Node.SyntaxTree);
-                AnalyzeTypesInFileOrdering(settings, ctx);
-            }, SyntaxKind.NamespaceDeclaration);
+                SemanticModel semanticModel = ctx.SemanticModel;
+
+                if (semanticModel.SyntaxTree.TryGetRoot(out SyntaxNode? root))
+                {
+                    var settings = OcreConfiguration.Read(provider, semanticModel.SyntaxTree);
+                    AnalyzeTypesInFileOrdering(settings, ctx, semanticModel, root);
+                }
+            });
         });
     }
 
-    private void AnalyzeIntraTypeSorting(OcreConfiguration settings, SyntaxNodeAnalysisContext context)
+    private void AnalyzeTypesInFileOrdering(OcreConfiguration settings, SemanticModelAnalysisContext context, SemanticModel model, SyntaxNode root)
     {
-        //context.ReportDiagnostic(Diagnostic.Create(Rules.MemberOrderRule, context.Node.GetLocation(), ))
-    }
-
-    private void AnalyzeTypesInFileOrdering(OcreConfiguration settings, SyntaxNodeAnalysisContext context)
-    {
-        var nsNode = (CSharpSyntaxNode)context.Node;
-
-        // Get all the type declarations directly within this namespace declaration, or within the compilation unit if this is the global namespace
-        CSharpSyntaxNode[] types = [.. nsNode
-            .ChildNodes()
-            .Where(n => n is TypeDeclarationSyntax or EnumDeclarationSyntax or DelegateDeclarationSyntax)
-            .Cast<CSharpSyntaxNode>()];
+        CSharpSyntaxNode[] types = [.. root.GetTypeDeclaractionsInFile()];
+        //context.ReportDiagnostic(Diagnostic.Create(Rules.TracingRule, root.GetLocation(), $"Types={types.Length} [{string.Join(",", types.Select(t => t.GetDisplayName()))}]"));
 
         if (types.Length < 2)
         {
             return; // trivially ordered
         }
 
-        TypeDeclarationComparer comparer = new(settings, context.SemanticModel);
+        TypeDeclarationComparer comparer = new(settings, model);
 
         // Pre-compute expected order string for message (configuration order tokens)
-        string expectedOrder = string.Join(", ", settings.TypeOrder.Select(t => t.ToString().ToLowerInvariant()));
+        List<CSharpSyntaxNode> sorted = [.. types];
+        sorted.Sort(comparer);
+
+        string expectedOrder = string.Join(", ", sorted.Select(t => t.GetDisplayName()));
 
         // Find all out-of-order types (report the later node in each violating pair)
         for (int i = 1; i < types.Length; i++)
@@ -126,38 +134,9 @@ public class OcreAnalyzer : DiagnosticAnalyzer
             CSharpSyntaxNode previous = types[i - 1];
             if (comparer.Compare(previous, current) > 0)
             {
-                string typeName = GetDisplayName(current);
+                string typeName = current.GetDisplayName();
                 context.ReportDiagnostic(Diagnostic.Create(Rules.TypeOrderInFileRule, current.GetLocation(), typeName, expectedOrder));
             }
-        }
-    }
-
-    private static string GetDisplayName(CSharpSyntaxNode node)
-    {
-        return node switch
-        {
-            ClassDeclarationSyntax cds => cds.Identifier.Text,
-            StructDeclarationSyntax sds => sds.Identifier.Text,
-            InterfaceDeclarationSyntax ids => ids.Identifier.Text,
-            EnumDeclarationSyntax eds => eds.Identifier.Text,
-            RecordDeclarationSyntax rds => rds.Identifier.Text,
-            DelegateDeclarationSyntax dds => dds.Identifier.Text,
-            _ => node.Kind().ToString(),
-        };
-    }
-
-    private static void AnalyzeSymbol(SymbolAnalysisContext context)
-    {
-        // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
-        var namedTypeSymbol = (INamedTypeSymbol)context.Symbol;
-
-        // Find just those named type symbols with names containing lowercase letters.
-        if (namedTypeSymbol.Name.ToCharArray().Any(char.IsLower))
-        {
-            // For all such symbols, produce a diagnostic.
-            //var diagnostic = Diagnostic.Create(Rule, namedTypeSymbol.Locations[0], namedTypeSymbol.Name);
-
-            //context.ReportDiagnostic(diagnostic);
         }
     }
 }

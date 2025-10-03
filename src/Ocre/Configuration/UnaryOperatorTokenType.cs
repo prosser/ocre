@@ -4,7 +4,7 @@ namespace Ocre.Configuration;
 
 using Ocre;
 
-internal enum UnaryOperatorTokenType
+public enum UnaryOperatorTokenType
 {
     [SettingAlias("+")]
     Plus,

@@ -68,5 +68,14 @@ namespace Ocre {
                 return ResourceManager.GetString("CodeFixTitle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sort types.
+        /// </summary>
+        internal static string SortTypesInFileTitle {
+            get {
+                return ResourceManager.GetString("SortTypesInFileTitle", resourceCulture);
+            }
+        }
     }
 }

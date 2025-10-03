@@ -2,7 +2,7 @@
 
 namespace Ocre.Configuration;
 
-internal enum TypeTokenType
+public enum TypeTokenType
 {
     Delegate = 0,
     Enum,

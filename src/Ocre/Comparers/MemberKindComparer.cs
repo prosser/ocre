@@ -3,9 +3,7 @@
 namespace Ocre.Comparers;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -38,39 +36,18 @@ internal class MemberKindComparer(OcreConfiguration config) : IComparer<CSharpSy
         return yIndex == -1 ? -1 : xIndex.CompareTo(yIndex);
     }
 
-    private MemberKind GetMemberKind(CSharpSyntaxNode node)
-    {
-        if (node is FieldDeclarationSyntax)
+    private static MemberKind GetMemberKind(CSharpSyntaxNode node) =>
+        node.Kind() switch
         {
-            return MemberKind.Field;
-        }
-        else if (node is ConstructorDeclarationSyntax)
-        {
-            return MemberKind.Constructor;
-        }
-        else if (node is EventDeclarationSyntax or EventFieldDeclarationSyntax)
-        {
-            return MemberKind.Event;
-        }
-        else if (node is PropertyDeclarationSyntax or IndexerDeclarationSyntax)
-        {
-            return MemberKind.Property;
-        }
-        else if (node is OperatorDeclarationSyntax or ConversionOperatorDeclarationSyntax)
-        {
-            return MemberKind.Operator;
-        }
-        else if (node is MethodDeclarationSyntax)
-        {
-            return MemberKind.Method;
-        }
-        else if (node is TypeDeclarationSyntax or DelegateDeclarationSyntax)
-        {
-            return MemberKind.Type;
-        }
-        else
-        {
-            throw new ArgumentException($"Unsupported syntax node type: {node.GetType().Name}", nameof(node));
-        }
-    }
+            SyntaxKind.FieldDeclaration => MemberKind.Field,
+            SyntaxKind.ConstructorDeclaration => MemberKind.Constructor,
+            SyntaxKind.EventDeclaration or SyntaxKind.EventFieldDeclaration => MemberKind.Event,
+            SyntaxKind.PropertyDeclaration or SyntaxKind.IndexerDeclaration => MemberKind.Property,
+            SyntaxKind.OperatorDeclaration or SyntaxKind.ConversionOperatorDeclaration => MemberKind.Operator,
+            SyntaxKind.MethodDeclaration => MemberKind.Method,
+            SyntaxKind.ClassDeclaration or SyntaxKind.StructDeclaration or
+            SyntaxKind.InterfaceDeclaration or SyntaxKind.RecordDeclaration or
+            SyntaxKind.RecordStructDeclaration or SyntaxKind.DelegateDeclaration => MemberKind.Type,
+            _ => throw new ArgumentException($"Unsupported syntax node type: {node.GetType().Name}", nameof(node)),
+        };
 }

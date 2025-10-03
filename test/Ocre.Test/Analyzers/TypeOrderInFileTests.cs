@@ -9,15 +9,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Analyzers.Ocre;
+using Analyzers.Ocre.Comparers;
+using Analyzers.Ocre.Configuration;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 
-using Analyzers.Ocre;
-using Analyzers.Ocre.Comparers;
-using Analyzers.Ocre.Configuration;
 using Ocre.Test.Verifiers;
 
 using Xunit;
@@ -124,7 +125,7 @@ public class TypeOrderInFileTests
     [MemberData(nameof(InOrderCases))]
     public async Task ProducesNoDiagnostics_WhenOrdered(string config, string source)
     {
-        await VerifyAsync(config, source, Array.Empty<DiagnosticResult>());
+        await VerifyAsync(config, source, []);
     }
 
     [Theory]
@@ -195,7 +196,7 @@ public class TypeOrderInFileTests
 
             if (ordered)
             {
-                await VerifyAsync(config, source, Array.Empty<DiagnosticResult>());
+                await VerifyAsync(config, source, []);
             }
             else
             {

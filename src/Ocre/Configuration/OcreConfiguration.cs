@@ -8,7 +8,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-internal class OcreConfiguration
+public class OcreConfiguration
 {
     /// <summary>
     /// The order in which members are sorted according to their accessibility.
