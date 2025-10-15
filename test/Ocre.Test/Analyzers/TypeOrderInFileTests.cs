@@ -135,7 +135,7 @@ public class TypeOrderInFileTests
         // Compute expected diagnostics by mimicking analyzer logic
         (OcreConfiguration settings, CSharpSyntaxNode[] types) = ParseTypesWithConfig(config, source);
         TypeDeclarationComparer comparer = new(settings, semanticModel: null);
-        string expectedOrder = string.Join(", ", settings.TypeOrder.Select(t => t.ToString().ToLowerInvariant()));
+        string expectedOrder = string.Join(", ", settings.Types.Select(t => t.ToString().ToLowerInvariant()));
 
         List<DiagnosticResult> expected = [];
         for (int i = 1; i < types.Length; i++)
@@ -201,7 +201,7 @@ public class TypeOrderInFileTests
             else
             {
                 // At least one diagnostic expected; compute them precisely
-                string expectedOrder = string.Join(", ", settings.TypeOrder.Select(t => t.ToString().ToLowerInvariant()));
+                string expectedOrder = string.Join(", ", settings.Types.Select(t => t.ToString().ToLowerInvariant()));
                 List<DiagnosticResult> expected = [];
                 for (int t = 1; t < types.Length; t++)
                 {
@@ -227,7 +227,7 @@ public class TypeOrderInFileTests
 
     private static async Task VerifyAsync(string config, string source, DiagnosticResult[] expected)
     {
-        string editorConfig = $"root = true\n[*.cs]\ncsharp_style_ocre_type_order = {config}\n";
+        string editorConfig = $"root = true\n[*.cs]\ncsharp_style_oc_type_order = {config}\n";
 
         var test = new CSharpAnalyzerVerifier<OcreAnalyzer>.Test
         {
@@ -244,7 +244,7 @@ public class TypeOrderInFileTests
         SyntaxTree tree = CSharpSyntaxTree.ParseText(source);
         var dict = new Dictionary<string, string>
         {
-            ["csharp_style_ocre_type_order"] = config
+            ["csharp_style_oc_type_order"] = config
         };
         AnalyzerConfigOptionsProvider provider = new LocalTestAnalyzerConfigOptionsProvider(dict);
         var settings = OcreConfiguration.Read(provider, tree);

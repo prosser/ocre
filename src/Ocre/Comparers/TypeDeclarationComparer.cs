@@ -16,14 +16,14 @@ public class TypeDeclarationComparer(OcreConfiguration config, SemanticModel? se
 
     public int Compare(CSharpSyntaxNode x, CSharpSyntaxNode y)
     {
-        TypeTokenType tx = GetTypeTokenType(x);
-        TypeTokenType ty = GetTypeTokenType(y);
+        TypesConfig tx = GetTypeTokenType(x);
+        TypesConfig ty = GetTypeTokenType(y);
 
         int cmp = 0;
-        for (int i = 0; i < config.TypeOrder.Length && cmp == 0; i++)
+        for (int i = 0; i < config.Types.Length && cmp == 0; i++)
         {
-            TypeTokenType tCur = config.TypeOrder[i];
-            if (tCur == TypeTokenType.Name)
+            TypesConfig tCur = config.Types[i];
+            if (tCur == TypesConfig.Name)
             {
                 cmp = nameComparer.Compare(x, y);
             }
@@ -43,21 +43,21 @@ public class TypeDeclarationComparer(OcreConfiguration config, SemanticModel? se
         return cmp;
     }
 
-    private static TypeTokenType GetTypeTokenType(CSharpSyntaxNode node)
+    private static TypesConfig GetTypeTokenType(CSharpSyntaxNode node)
     {
         return node switch
         {
-            ClassDeclarationSyntax => TypeTokenType.Class,
-            StructDeclarationSyntax => TypeTokenType.Struct,
-            InterfaceDeclarationSyntax => TypeTokenType.Interface,
-            EnumDeclarationSyntax => TypeTokenType.Enum,
+            ClassDeclarationSyntax => TypesConfig.Class,
+            StructDeclarationSyntax => TypesConfig.Struct,
+            InterfaceDeclarationSyntax => TypesConfig.Interface,
+            EnumDeclarationSyntax => TypesConfig.Enum,
             // Explicit record class
-            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.ClassKeyword) => TypeTokenType.Record,
+            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.ClassKeyword) => TypesConfig.Record,
             // Explicit record struct
-            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.StructKeyword) => TypeTokenType.RecordStruct,
+            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.StructKeyword) => TypesConfig.RecordStruct,
             // Implicit record class (no class/struct modifier token present)
-            RecordDeclarationSyntax => TypeTokenType.Record,
-            DelegateDeclarationSyntax => TypeTokenType.Delegate,
+            RecordDeclarationSyntax => TypesConfig.Record,
+            DelegateDeclarationSyntax => TypesConfig.Delegate,
             _ => throw new ArgumentException("Node is not a type declaration", nameof(node)),
         };
     }

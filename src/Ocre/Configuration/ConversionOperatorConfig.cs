@@ -2,12 +2,11 @@
 
 namespace Ocre.Configuration;
 
-internal enum ConversionOperatorTokenType
+public enum ConversionOperatorConfig
 {
     Implicit,
     Explicit,
     ReturnType,
-    Arg1Type,
-    Arg2Type,
+    ParamTypes,
 }
 

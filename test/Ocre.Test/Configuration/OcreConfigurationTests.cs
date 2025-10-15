@@ -20,45 +20,63 @@ public class OcreConfigurationTests
     [Fact]
     public void Read_ParsesArraySettingsFromAnalyzerConfigOptions()
     {
-        var dict = new Dictionary<string, string>
+        OcreConfiguration expected = new()
         {
-            ["csharp_style_ocre_accessibility_order"] = "public,protected internal,private",
-            ["csharp_style_ocre_allocation_modifier_order"] = "const,static,instance",
-            ["csharp_style_ocre_member_order"] = "field,constructor,property,method",
-            ["csharp_style_ocre_operator_order"] = "conversion,unary,binary",
-            ["csharp_style_ocre_strategy_order"] = "member kind,accessibility,allocation,name",
-            ["csharp_style_ocre_type_order"] = "class,interface,struct"
+            AddMissingOrderValues = false,
+            Accessibility = [AccessibilityConfig.Public, AccessibilityConfig.ProtectedOrInternal, AccessibilityConfig.Private],
+            BinaryOperators = [BinaryOperatorsConfig.Plus, BinaryOperatorsConfig.Minus, BinaryOperatorsConfig.Multiply, BinaryOperatorsConfig.Divide],
+            AllocationModifiers = [AllocationModifierConfig.Const, AllocationModifierConfig.Static, AllocationModifierConfig.Instance],
+            ConversionOperators = [ConversionOperatorConfig.Implicit, ConversionOperatorConfig.Explicit],
+            Members = [MembersConfig.MemberKinds, MembersConfig.Accessibility, MembersConfig.AllocationModifiers, MembersConfig.Name, MembersConfig.Parameters, MembersConfig.ReturnType],
+            MemberKinds = [MemberKindsConfig.Field, MemberKindsConfig.Constructor, MemberKindsConfig.Property, MemberKindsConfig.Method],
+            Operators = [OperatorsConfig.Conversion, OperatorsConfig.Unary, OperatorsConfig.Binary],
+            Types = [TypesConfig.Class, TypesConfig.Interface, TypesConfig.Struct],
+            UnaryOperators = [UnaryOperatorConfig.Plus, UnaryOperatorConfig.Minus, UnaryOperatorConfig.Negate, UnaryOperatorConfig.Complement],
         };
+
+        Dictionary<string, string> dict = expected.ToStringDictionary();
 
         var provider = new TestAnalyzerConfigOptionsProvider(dict);
         SyntaxTree tree = CSharpSyntaxTree.ParseText("namespace N { class C { } }");
 
         var cfg = OcreConfiguration.Read(provider, tree);
 
-        Assert.Equal([Accessibility.Public, Accessibility.ProtectedOrInternal, Accessibility.Private], cfg.AccessibilityOrder);
-        Assert.Equal([AllocationModifierTokenType.Const, AllocationModifierTokenType.Static, AllocationModifierTokenType.Instance], cfg.AllocationModifierOrder);
-        Assert.Equal([MemberKind.Field, MemberKind.Constructor, MemberKind.Property, MemberKind.Method], cfg.MemberOrder);
-        Assert.Equal([OperatorKind.Conversion, OperatorKind.Unary, OperatorKind.Binary], cfg.OperatorOrder);
-        Assert.Equal([SortStrategyKind.MemberKind, SortStrategyKind.Accessibility, SortStrategyKind.Allocation, SortStrategyKind.Name], cfg.SortOrder);
-        Assert.Equal([TypeTokenType.Class, TypeTokenType.Interface, TypeTokenType.Struct], cfg.TypeOrder);
+        Assert.Equal([AccessibilityConfig.Public, AccessibilityConfig.ProtectedOrInternal, AccessibilityConfig.Private], cfg.Accessibility);
+        Assert.Equal([AllocationModifierConfig.Const, AllocationModifierConfig.Static, AllocationModifierConfig.Instance], cfg.AllocationModifiers);
+        Assert.Equal([MemberKindsConfig.Field, MemberKindsConfig.Constructor, MemberKindsConfig.Property, MemberKindsConfig.Method], cfg.MemberKinds);
+        Assert.Equal([OperatorsConfig.Conversion, OperatorsConfig.Unary, OperatorsConfig.Binary], cfg.Operators);
+        Assert.Equal([MembersConfig.MemberKinds, MembersConfig.Accessibility, MembersConfig.AllocationModifiers, MembersConfig.Name, MembersConfig.Parameters, MembersConfig.ReturnType], cfg.Members);
+        Assert.Equal([TypesConfig.Class, TypesConfig.Interface, TypesConfig.Struct], cfg.Types);
+        Assert.Equal([BinaryOperatorsConfig.Plus, BinaryOperatorsConfig.Minus, BinaryOperatorsConfig.Multiply, BinaryOperatorsConfig.Divide], cfg.BinaryOperators);
+        Assert.Equal([UnaryOperatorConfig.Plus, UnaryOperatorConfig.Minus, UnaryOperatorConfig.Negate, UnaryOperatorConfig.Complement], cfg.UnaryOperators);
+        Assert.Equal([ConversionOperatorConfig.Implicit, ConversionOperatorConfig.Explicit], cfg.ConversionOperators);
     }
 
     [Fact]
     public void Read_UsesDefaultsWhenSettingMissing()
     {
-        var dict = new Dictionary<string, string>();
+        OcreConfiguration expected = new()
+        {
+            AddMissingOrderValues = true,
+        };
+
+        Dictionary<string, string> dict = expected.ToStringDictionary();
+
         var provider = new TestAnalyzerConfigOptionsProvider(dict);
         SyntaxTree tree = CSharpSyntaxTree.ParseText("class C { }");
 
         var cfg = OcreConfiguration.Read(provider, tree);
 
         // When settings missing, arrays should be populated with enum defaults (all values)
-        Assert.NotEmpty(cfg.AccessibilityOrder);
-        Assert.NotEmpty(cfg.AllocationModifierOrder);
-        Assert.NotEmpty(cfg.MemberOrder);
-        Assert.NotEmpty(cfg.OperatorOrder);
-        Assert.NotEmpty(cfg.SortOrder);
-        Assert.NotEmpty(cfg.TypeOrder);
+        Assert.NotEmpty(cfg.Accessibility);
+        Assert.NotEmpty(cfg.AllocationModifiers);
+        Assert.NotEmpty(cfg.MemberKinds);
+        Assert.NotEmpty(cfg.Operators);
+        Assert.NotEmpty(cfg.Members);
+        Assert.NotEmpty(cfg.Types);
+        Assert.NotEmpty(cfg.BinaryOperators);
+        Assert.NotEmpty(cfg.UnaryOperators);
+        Assert.NotEmpty(cfg.ConversionOperators);
     }
 
     private sealed class TestAnalyzerConfigOptionsProvider(Dictionary<string, string> values) : AnalyzerConfigOptionsProvider

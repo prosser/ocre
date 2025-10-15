@@ -28,8 +28,8 @@ internal class MemberAllocationComparer(OcreConfiguration config) : IComparer<CS
     public int Compare(MemberDeclarationSyntax x, MemberDeclarationSyntax y)
     {
         // find the allocation type of each member
-        AllocationModifierTokenType xAlloc = GetAllocationModifier(x);
-        AllocationModifierTokenType yAlloc = GetAllocationModifier(y);
+        AllocationModifierConfig xAlloc = GetAllocationModifier(x);
+        AllocationModifierConfig yAlloc = GetAllocationModifier(y);
 
         // If both are the same, they are equal
         if (xAlloc == yAlloc)
@@ -37,8 +37,8 @@ internal class MemberAllocationComparer(OcreConfiguration config) : IComparer<CS
             return 0;
         }
 
-        int xIndex = Array.IndexOf(config.AllocationModifierOrder, xAlloc);
-        int yIndex = Array.IndexOf(config.AllocationModifierOrder, yAlloc);
+        int xIndex = Array.IndexOf(config.AllocationModifiers, xAlloc);
+        int yIndex = Array.IndexOf(config.AllocationModifiers, yAlloc);
 
         return xIndex == -1
             ? 1
@@ -47,21 +47,21 @@ internal class MemberAllocationComparer(OcreConfiguration config) : IComparer<CS
                 : xIndex.CompareTo(yIndex);
     }
 
-    private AllocationModifierTokenType GetAllocationModifier(MemberDeclarationSyntax decl)
+    private AllocationModifierConfig GetAllocationModifier(MemberDeclarationSyntax decl)
     {
         foreach (SyntaxToken modifier in decl.Modifiers)
         {
             if (modifier.IsKind(SyntaxKind.StaticKeyword))
             {
-                return AllocationModifierTokenType.Static;
+                return AllocationModifierConfig.Static;
             }
             else if (modifier.IsKind(SyntaxKind.ConstKeyword))
             {
-                return AllocationModifierTokenType.Const;
+                return AllocationModifierConfig.Const;
             }
         }
 
         // Default to instance
-        return AllocationModifierTokenType.Instance;
+        return AllocationModifierConfig.Instance;
     }
 }

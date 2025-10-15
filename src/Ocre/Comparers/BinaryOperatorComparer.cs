@@ -13,13 +13,13 @@ using Ocre.Configuration;
 
 internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? semanticModel = null) : IComparer<CSharpSyntaxNode>, IComparer<OperatorDeclarationSyntax>
 {
-    private readonly OperatorKeyCache<BinaryOperatorTokenType> cache = new(config, semanticModel);
+    private readonly OperatorKeyCache<BinaryOperatorsConfig> cache = new(config, semanticModel);
 
     private enum SortKind
     {
         Operator,
         ReturnType,
-        ParamType0,
+        Parameters,
         ParamType1,
     }
 
@@ -30,8 +30,8 @@ internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? s
 
     public int Compare(OperatorDeclarationSyntax x, OperatorDeclarationSyntax y)
     {
-        OperatorKey<BinaryOperatorTokenType> kx = cache.GetOrAdd(x, config => config.BinaryOperatorOrder);
-        OperatorKey<BinaryOperatorTokenType> ky = cache.GetOrAdd(y, config => config.BinaryOperatorOrder);
+        OperatorKey<BinaryOperatorsConfig> kx = cache.GetOrAdd(x, config => config.BinaryOperators);
+        OperatorKey<BinaryOperatorsConfig> ky = cache.GetOrAdd(y, config => config.BinaryOperators);
 
         // Handle missing operator parse symmetrically
         if (!kx.HasOp)
@@ -63,9 +63,9 @@ internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? s
         // Compare according to configured priority, using cached semantic keys
         int cmp = 0;
         OcreConfiguration config = cache.Config;
-        for (int i = 0; cmp == 0 && i < config.BinaryOperatorOrder.Length; i++)
+        for (int i = 0; cmp == 0 && i < config.BinaryOperators.Length; i++)
         {
-            BinaryOperatorTokenType cur = config.BinaryOperatorOrder[i];
+            BinaryOperatorsConfig cur = config.BinaryOperators[i];
             SortKind sortKind = GetSortKind(cur);
             if (sortKind == SortKind.Operator && cur != kx.Op && cur != ky.Op)
             {
@@ -76,7 +76,7 @@ internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? s
             {
                 SortKind.Operator => opCmp,
                 SortKind.ReturnType => StringComparer.Ordinal.Compare(kx.ReturnTypeKey, ky.ReturnTypeKey),
-                SortKind.ParamType0 => StringComparer.Ordinal.Compare(kx.ParamKeys[0], ky.ParamKeys[0]),
+                SortKind.Parameters => StringComparer.Ordinal.Compare(kx.ParamKeys[0], ky.ParamKeys[0]),
                 SortKind.ParamType1 => StringComparer.Ordinal.Compare(kx.ParamKeys[1], ky.ParamKeys[1]),
                 _ => 0,
             };
@@ -85,11 +85,10 @@ internal class BinaryOperatorComparer(OcreConfiguration config, SemanticModel? s
         return cmp;
     }
 
-    private static SortKind GetSortKind(BinaryOperatorTokenType order) => order switch
+    private static SortKind GetSortKind(BinaryOperatorsConfig order) => order switch
     {
-        BinaryOperatorTokenType.ReturnType => SortKind.ReturnType,
-        BinaryOperatorTokenType.ParamType0 => SortKind.ParamType0,
-        BinaryOperatorTokenType.ParamType1 => SortKind.ParamType1,
+        BinaryOperatorsConfig.ReturnType => SortKind.ReturnType,
+        BinaryOperatorsConfig.Parameters => SortKind.Parameters,
         _ => SortKind.Operator,
     };
 }

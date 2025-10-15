@@ -2,11 +2,8 @@
 
 namespace Ocre.Configuration;
 
-public enum SortStrategyKind
+public enum ParameterSortKind
 {
-    MemberKind = 0,
-    Accessibility,
-    Allocation,
-    Name,
+    Types = 0,
+    Count,
 }
-

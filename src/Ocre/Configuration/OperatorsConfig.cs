@@ -2,12 +2,10 @@
 
 namespace Ocre.Configuration;
 
-public enum OperatorKind
+public enum OperatorsConfig
 {
-    Conversion = 0,
-    Explicit,
+    Conversion,
     Unary,
     Binary,
-    Arithmetic,
 }
 

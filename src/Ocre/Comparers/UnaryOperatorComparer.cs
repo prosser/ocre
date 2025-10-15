@@ -11,7 +11,7 @@ using Ocre.Configuration;
 
 internal class UnaryOperatorComparer(OcreConfiguration config, SemanticModel? semanticModel = null) : IComparer<OperatorDeclarationSyntax>
 {
-    private readonly OperatorKeyCache<UnaryOperatorTokenType> cache = new(config, semanticModel);
+    private readonly OperatorKeyCache<UnaryOperatorConfig> cache = new(config, semanticModel);
 
     private enum SortKind
     {
@@ -22,8 +22,8 @@ internal class UnaryOperatorComparer(OcreConfiguration config, SemanticModel? se
 
     public int Compare(OperatorDeclarationSyntax x, OperatorDeclarationSyntax y)
     {
-        OperatorKey<UnaryOperatorTokenType> kx = cache.GetOrAdd(x, config => config.UnaryOperatorOrder);
-        OperatorKey<UnaryOperatorTokenType> ky = cache.GetOrAdd(y, config => config.UnaryOperatorOrder);
+        OperatorKey<UnaryOperatorConfig> kx = cache.GetOrAdd(x, config => config.UnaryOperators);
+        OperatorKey<UnaryOperatorConfig> ky = cache.GetOrAdd(y, config => config.UnaryOperators);
 
         // Handle missing operator parse symmetrically
         if (!kx.HasOp)
@@ -55,9 +55,9 @@ internal class UnaryOperatorComparer(OcreConfiguration config, SemanticModel? se
         // Compare according to configured priority, using cached semantic keys
         int cmp = 0;
         OcreConfiguration config = cache.Config;
-        for (int i = 0; cmp == 0 && i < config.UnaryOperatorOrder.Length; i++)
+        for (int i = 0; cmp == 0 && i < config.UnaryOperators.Length; i++)
         {
-            UnaryOperatorTokenType cur = config.UnaryOperatorOrder[i];
+            UnaryOperatorConfig cur = config.UnaryOperators[i];
             SortKind sortKind = GetSortKind(cur);
             if (sortKind == SortKind.Operator && cur != kx.Op && cur != ky.Op)
             {
@@ -76,16 +76,16 @@ internal class UnaryOperatorComparer(OcreConfiguration config, SemanticModel? se
         return cmp;
     }
 
-    private static SortKind GetSortKind(UnaryOperatorTokenType order) => order switch
+    private static SortKind GetSortKind(UnaryOperatorConfig order) => order switch
     {
-        UnaryOperatorTokenType.Plus => SortKind.Operator,
-        UnaryOperatorTokenType.Minus => SortKind.Operator,
-        UnaryOperatorTokenType.Negate => SortKind.Operator,
-        UnaryOperatorTokenType.Complement => SortKind.Operator,
-        UnaryOperatorTokenType.Increment => SortKind.Operator,
-        UnaryOperatorTokenType.Decrement => SortKind.Operator,
-        UnaryOperatorTokenType.True => SortKind.Operator,
-        UnaryOperatorTokenType.False => SortKind.Operator,
+        UnaryOperatorConfig.Plus => SortKind.Operator,
+        UnaryOperatorConfig.Minus => SortKind.Operator,
+        UnaryOperatorConfig.Negate => SortKind.Operator,
+        UnaryOperatorConfig.Complement => SortKind.Operator,
+        UnaryOperatorConfig.Increment => SortKind.Operator,
+        UnaryOperatorConfig.Decrement => SortKind.Operator,
+        UnaryOperatorConfig.True => SortKind.Operator,
+        UnaryOperatorConfig.False => SortKind.Operator,
         _ => SortKind.Operator,
     };
 }

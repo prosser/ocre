@@ -18,7 +18,7 @@ public class AccessibilityComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            AccessibilityOrder = [Accessibility.Public, Accessibility.Private]
+            Accessibility = [AccessibilityConfig.Public, AccessibilityConfig.Private]
         };
 
         var cmp = new AccessibilityComparer(cfg);
@@ -33,12 +33,12 @@ public class AccessibilityComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            AccessibilityOrder = [Accessibility.Public]
+            Accessibility = [AccessibilityConfig.Public]
         };
 
         var cmp = new AccessibilityComparer(cfg);
 
-        // Accessibility.Internal is not in the configured order -> treated as "later" than configured values
+        // AccessibilityConfig.Internal is not in the configured order -> treated as "later" than configured values
         Assert.True(cmp.Compare(Accessibility.Public, Accessibility.Internal) < 0);
         Assert.True(cmp.Compare(Accessibility.Internal, Accessibility.Public) > 0);
     }

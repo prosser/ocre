@@ -28,7 +28,7 @@ public class MemberAllocationComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            AllocationModifierOrder = [AllocationModifierTokenType.Const, AllocationModifierTokenType.Static, AllocationModifierTokenType.Instance]
+            AllocationModifiers = [AllocationModifierConfig.Const, AllocationModifierConfig.Static, AllocationModifierConfig.Instance]
         };
 
         FieldDeclarationSyntax constField = ParseField("private const int A = 1;");
@@ -47,7 +47,7 @@ public class MemberAllocationComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            AllocationModifierOrder = [AllocationModifierTokenType.Static]
+            AllocationModifiers = [AllocationModifierConfig.Static]
         };
 
         PropertyDeclarationSyntax instanceProp = ParseProperty("private int C { get; set; }");

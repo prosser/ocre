@@ -21,7 +21,7 @@ public class UnaryOperatorComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            UnaryOperatorOrder = [UnaryOperatorTokenType.Plus, UnaryOperatorTokenType.Minus, UnaryOperatorTokenType.Negate, UnaryOperatorTokenType.Complement, UnaryOperatorTokenType.Increment, UnaryOperatorTokenType.Decrement, UnaryOperatorTokenType.True, UnaryOperatorTokenType.False]
+            UnaryOperators = [UnaryOperatorConfig.Plus, UnaryOperatorConfig.Minus, UnaryOperatorConfig.Negate, UnaryOperatorConfig.Complement, UnaryOperatorConfig.Increment, UnaryOperatorConfig.Decrement, UnaryOperatorConfig.True, UnaryOperatorConfig.False]
         };
 
         static OperatorDeclarationSyntax Parse(string code)

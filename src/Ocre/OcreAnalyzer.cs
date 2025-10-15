@@ -139,4 +139,9 @@ public class OcreAnalyzer : DiagnosticAnalyzer
             }
         }
     }
+
+    private void AnalyzeMemberOrderingInType(OcreConfiguration settings, SemanticModelAnalysisContext context, SemanticModel model, CSharpSyntaxNode typeNode)
+    {
+
+    }
 }

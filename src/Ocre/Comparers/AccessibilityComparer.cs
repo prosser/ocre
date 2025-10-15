@@ -9,9 +9,10 @@ using Microsoft.CodeAnalysis;
 
 using Ocre.Configuration;
 
-internal class AccessibilityComparer(OcreConfiguration config) : IComparer<Accessibility>
+internal class AccessibilityComparer(OcreConfiguration config) : IComparer<AccessibilityConfig>
 {
-    public int Compare(Accessibility x, Accessibility y)
+    public int Compare(Accessibility x, Accessibility y) => Compare((AccessibilityConfig)x, (AccessibilityConfig)y);
+    public int Compare(AccessibilityConfig x, AccessibilityConfig y)
     {
         // If both are the same, they are equal
         if (x == y)
@@ -19,8 +20,8 @@ internal class AccessibilityComparer(OcreConfiguration config) : IComparer<Acces
             return 0;
         }
 
-        int xIndex = Array.IndexOf(config.AccessibilityOrder, x);
-        int yIndex = Array.IndexOf(config.AccessibilityOrder, y);
+        int xIndex = Array.IndexOf(config.Accessibility, x);
+        int yIndex = Array.IndexOf(config.Accessibility, y);
 
         // If x is not found in the order array, it is considered greater (comes later)
         if (xIndex == -1)

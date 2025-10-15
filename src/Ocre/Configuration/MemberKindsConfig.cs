@@ -2,7 +2,7 @@
 
 namespace Ocre.Configuration;
 
-public enum MemberKind
+public enum MemberKindsConfig
 {
     Field = 0,
     Constructor,

@@ -21,7 +21,7 @@ public class OperatorKindComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            OperatorOrder = [OperatorKind.Conversion, OperatorKind.Unary, OperatorKind.Binary]
+            Operators = [OperatorsConfig.Conversion, OperatorsConfig.Unary, OperatorsConfig.Binary]
         };
 
         ConversionOperatorDeclarationSyntax ParseConversion(string code) =>

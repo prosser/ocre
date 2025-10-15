@@ -4,9 +4,12 @@ namespace Ocre.Test.Comparers;
 
 extern alias Analyzers;
 
+using System.Linq;
+
 using Analyzers.Ocre.Comparers;
 using Analyzers.Ocre.Configuration;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -14,42 +17,52 @@ using Xunit;
 
 public class MemberKindComparerTests
 {
-    private static MemberDeclarationSyntax ParseMember(string code)
-    {
-        return SyntaxFactory.ParseMemberDeclaration(code) ?? throw new System.Exception("Failed to parse member");
-    }
-
     [Fact]
     public void OrdersAccordingToConfig()
     {
         var cfg = new OcreConfiguration
         {
-            MemberOrder = [
-                MemberKind.Field,
-                MemberKind.Constructor,
-                MemberKind.Event,
-                MemberKind.Property,
-                MemberKind.Operator,
-                MemberKind.Method,
-                MemberKind.Type
+            MemberKinds = [
+                MemberKindsConfig.Field,
+                MemberKindsConfig.Constructor,
+                MemberKindsConfig.Event,
+                MemberKindsConfig.Property,
+                MemberKindsConfig.Operator,
+                MemberKindsConfig.Method,
+                MemberKindsConfig.Type
             ]
         };
 
-        MemberDeclarationSyntax field = ParseMember("int f;");
-        MemberDeclarationSyntax ctor = ParseMember("public C() { }");
-        MemberDeclarationSyntax ev = ParseMember("public event System.EventHandler E; ");
-        MemberDeclarationSyntax prop = ParseMember("public int P { get; set; }");
-        MemberDeclarationSyntax op = ParseMember("public static C operator +(C a, C b) => a; ");
-        MemberDeclarationSyntax method = ParseMember("public void M() { }");
-        MemberDeclarationSyntax type = ParseMember("class D { }");
+        const string Source = """
+            public class C
+            {
+                int f;
+                public C() { }
+                public event System.EventHandler E;
+                public int P { get; set; }
+                public static C operator +(C a, C b) => a;
+                public void M() { }
+                class D { }
+            }
+            """;
 
-        var cmp = new MemberKindComparer(cfg);
+        SyntaxTree tree = CSharpSyntaxTree.ParseText(Source);
+        ClassDeclarationSyntax root = tree.GetRoot().ChildNodes().Single() as ClassDeclarationSyntax ?? throw new System.Exception($"Failed to get root node: {tree.GetRoot()!.Kind()}");
+        var field = (FieldDeclarationSyntax)root.Members[0];
+        var ctor = (ConstructorDeclarationSyntax)root.Members[1];
+        var ev = (EventFieldDeclarationSyntax)root.Members[2];
+        var prop =  (PropertyDeclarationSyntax)root.Members[3];
+        var binaryAddOp = (OperatorDeclarationSyntax)root.Members[4];
+        var method = (MethodDeclarationSyntax)root.Members[5];
+        var nestedType = (ClassDeclarationSyntax)root.Members[6];
+
+        var cmp = new MemberKindComparer(cfg, null);
 
         Assert.True(cmp.Compare(field, ctor) < 0);
         Assert.True(cmp.Compare(ctor, ev) < 0);
         Assert.True(cmp.Compare(ev, prop) < 0);
-        Assert.True(cmp.Compare(prop, op) < 0);
-        Assert.True(cmp.Compare(op, method) < 0);
-        Assert.True(cmp.Compare(method, type) < 0);
+        Assert.True(cmp.Compare(prop, binaryAddOp) < 0);
+        Assert.True(cmp.Compare(binaryAddOp, method) < 0);
+        Assert.True(cmp.Compare(method, nestedType) < 0);
     }
 }

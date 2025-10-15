@@ -19,7 +19,7 @@ public class BinaryOperatorComparerTests
     {
         var cfg = new OcreConfiguration
         {
-            BinaryOperatorOrder = [BinaryOperatorTokenType.Plus, BinaryOperatorTokenType.Minus, BinaryOperatorTokenType.ReturnType, BinaryOperatorTokenType.ParamType0, BinaryOperatorTokenType.ParamType1]
+            BinaryOperators = [BinaryOperatorsConfig.Plus, BinaryOperatorsConfig.Minus, BinaryOperatorsConfig.ReturnType, BinaryOperatorsConfig.Parameters]
         };
 
         var opPlus = SyntaxFactory.ParseMemberDeclaration("public static int operator +(C a, C b) => 0;") as OperatorDeclarationSyntax;

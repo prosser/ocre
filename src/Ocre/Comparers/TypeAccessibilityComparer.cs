@@ -35,7 +35,7 @@ internal class TypeAccessibilityComparer(OcreConfiguration config) : IComparer<C
         Accessibility ax = GetTypeAccessibility(x);
         Accessibility ay = GetTypeAccessibility(y);
 
-        return accessibilityComparer.Compare(ax, ay);
+        return accessibilityComparer.Compare((AccessibilityConfig)ax, (AccessibilityConfig)ay);
     }
 
     private static Accessibility GetTypeAccessibility(TypeDeclarationSyntax node)

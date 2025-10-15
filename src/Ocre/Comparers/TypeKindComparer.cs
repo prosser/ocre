@@ -12,13 +12,13 @@ using Ocre.Configuration;
 
 internal sealed class TypeKindComparer : IComparer<CSharpSyntaxNode>
 {
-    private readonly Dictionary<TypeTokenType, int> typeOrderMap;
+    private readonly Dictionary<TypesConfig, int> typeOrderMap;
     public TypeKindComparer(OcreConfiguration config)
     {
         typeOrderMap = [];
-        for (int i = 0; i < config.TypeOrder.Length; i++)
+        for (int i = 0; i < config.Types.Length; i++)
         {
-            typeOrderMap[config.TypeOrder[i]] = i;
+            typeOrderMap[config.Types[i]] = i;
         }
     }
 
@@ -34,8 +34,8 @@ internal sealed class TypeKindComparer : IComparer<CSharpSyntaxNode>
             throw new ArgumentNullException(nameof(y));
         }
 
-        TypeTokenType tx = GetTypeTokenType(x);
-        TypeTokenType ty = GetTypeTokenType(y);
+        TypesConfig tx = GetTypeTokenType(x);
+        TypesConfig ty = GetTypeTokenType(y);
         if (tx == ty)
         {
             return 0;
@@ -46,17 +46,17 @@ internal sealed class TypeKindComparer : IComparer<CSharpSyntaxNode>
         return xIndex.CompareTo(yIndex);
     }
 
-    private static TypeTokenType GetTypeTokenType(CSharpSyntaxNode node)
+    private static TypesConfig GetTypeTokenType(CSharpSyntaxNode node)
     {
         return node switch
         {
-            ClassDeclarationSyntax => TypeTokenType.Class,
-            StructDeclarationSyntax => TypeTokenType.Struct,
-            InterfaceDeclarationSyntax => TypeTokenType.Interface,
-            EnumDeclarationSyntax => TypeTokenType.Enum,
-            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.ClassKeyword) => TypeTokenType.Record,
-            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.StructKeyword) => TypeTokenType.RecordStruct,
-            DelegateDeclarationSyntax => TypeTokenType.Delegate,
+            ClassDeclarationSyntax => TypesConfig.Class,
+            StructDeclarationSyntax => TypesConfig.Struct,
+            InterfaceDeclarationSyntax => TypesConfig.Interface,
+            EnumDeclarationSyntax => TypesConfig.Enum,
+            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.ClassKeyword) => TypesConfig.Record,
+            RecordDeclarationSyntax r when r.ClassOrStructKeyword.IsKind(SyntaxKind.StructKeyword) => TypesConfig.RecordStruct,
+            DelegateDeclarationSyntax => TypesConfig.Delegate,
             _ => throw new ArgumentException("Node is not a type declaration", nameof(node)),
         };
     }

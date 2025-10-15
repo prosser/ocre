@@ -1,30 +1,43 @@
 ﻿// <copyright file="MemberKindComparer.cs">Copyright (c) Peter Rosser. All rights reserved.</copyright>
 
 namespace Ocre.Comparers;
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Ocre.Configuration;
 
-internal class MemberKindComparer(OcreConfiguration config) : IComparer<CSharpSyntaxNode>
+internal class MemberKindComparer(OcreConfiguration config, SemanticModel? semanticModel) : IComparer<CSharpSyntaxNode>
 {
+    private readonly CompositeComparer<CSharpSyntaxNode> operatorComparer = new(
+        config.Operators.Select(k => k switch
+        {
+            OperatorsConfig.Unary => (IComparer<CSharpSyntaxNode>)new UnaryOperatorComparer(config, semanticModel),
+            OperatorsConfig.Binary => new BinaryOperatorComparer(config, semanticModel),
+            _ => throw new NotSupportedException($"Unsupported operator kind: {k}"),
+        }));
     public int Compare(CSharpSyntaxNode x, CSharpSyntaxNode y)
     {
         // Extract the kind of each member.
-        MemberKind xKind = GetMemberKind(x);
-        MemberKind yKind = GetMemberKind(y);
+        MemberKindsConfig xKind = GetMemberKind(x);
+        MemberKindsConfig yKind = GetMemberKind(y);
 
-        // If both are the same kind, they are equal.
         if (xKind == yKind)
         {
-            return 0;
+            return xKind switch
+            {
+                MemberKindsConfig.Operator => operatorComparer.Compare(x, y),
+                // TODO: add sorting strategies like "by number of parameters" for methods
+                _ => 0,
+            };
         }
 
-        int xIndex = Array.IndexOf(config.MemberOrder, xKind);
-        int yIndex = Array.IndexOf(config.MemberOrder, yKind);
+        int xIndex = Array.IndexOf(config.MemberKinds, xKind);
+        int yIndex = Array.IndexOf(config.MemberKinds, yKind);
 
         // If x is not found in the order array, it is considered greater (comes later).
         if (xIndex == -1)
@@ -36,18 +49,18 @@ internal class MemberKindComparer(OcreConfiguration config) : IComparer<CSharpSy
         return yIndex == -1 ? -1 : xIndex.CompareTo(yIndex);
     }
 
-    private static MemberKind GetMemberKind(CSharpSyntaxNode node) =>
+    private static MemberKindsConfig GetMemberKind(CSharpSyntaxNode node) =>
         node.Kind() switch
         {
-            SyntaxKind.FieldDeclaration => MemberKind.Field,
-            SyntaxKind.ConstructorDeclaration => MemberKind.Constructor,
-            SyntaxKind.EventDeclaration or SyntaxKind.EventFieldDeclaration => MemberKind.Event,
-            SyntaxKind.PropertyDeclaration or SyntaxKind.IndexerDeclaration => MemberKind.Property,
-            SyntaxKind.OperatorDeclaration or SyntaxKind.ConversionOperatorDeclaration => MemberKind.Operator,
-            SyntaxKind.MethodDeclaration => MemberKind.Method,
+            SyntaxKind.FieldDeclaration => MemberKindsConfig.Field,
+            SyntaxKind.ConstructorDeclaration => MemberKindsConfig.Constructor,
+            SyntaxKind.EventDeclaration or SyntaxKind.EventFieldDeclaration => MemberKindsConfig.Event,
+            SyntaxKind.PropertyDeclaration or SyntaxKind.IndexerDeclaration => MemberKindsConfig.Property,
+            SyntaxKind.OperatorDeclaration or SyntaxKind.ConversionOperatorDeclaration => MemberKindsConfig.Operator,
+            SyntaxKind.MethodDeclaration => MemberKindsConfig.Method,
             SyntaxKind.ClassDeclaration or SyntaxKind.StructDeclaration or
             SyntaxKind.InterfaceDeclaration or SyntaxKind.RecordDeclaration or
-            SyntaxKind.RecordStructDeclaration or SyntaxKind.DelegateDeclaration => MemberKind.Type,
-            _ => throw new ArgumentException($"Unsupported syntax node type: {node.GetType().Name}", nameof(node)),
+            SyntaxKind.RecordStructDeclaration or SyntaxKind.DelegateDeclaration => MemberKindsConfig.Type,
+            _ => (MemberKindsConfig)(-1),
         };
 }

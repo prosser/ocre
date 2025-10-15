@@ -38,7 +38,7 @@ internal sealed class OperatorKeyCache<TOp>(OcreConfiguration config, SemanticMo
         return GetOrAdd(node, n =>
         {
             OperatorKey<TOp> key = new();
-            if (EnumParser.TryParse(n.OperatorToken.Text, out TOp op))
+            if (ConfigEnumHelper.TryParse(n.OperatorToken.Text, out TOp op))
             {
                 key.HasOp = true;
                 key.Op = op;

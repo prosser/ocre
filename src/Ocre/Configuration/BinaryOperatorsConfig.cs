@@ -4,7 +4,7 @@ namespace Ocre.Configuration;
 
 using Ocre;
 
-public enum BinaryOperatorTokenType
+public enum BinaryOperatorsConfig
 {
     [SettingAlias("+")]
     Plus,
@@ -27,7 +27,6 @@ public enum BinaryOperatorTokenType
     [SettingAlias(">>")]
     RightShift,
     ReturnType,
-    ParamType0,
-    ParamType1,
+    Parameters,
 }
 

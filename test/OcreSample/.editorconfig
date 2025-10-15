@@ -269,55 +269,55 @@ end_of_line = crlf
 
 [*.cs]
 
-# for csharp_style_ocre_* settings, the following conventions are followed during parsing:
+# for csharp_style_oc_* settings, the following conventions are followed during parsing:
 # For array-type (sort-order) settings:
 # 1. parsed left-to-right.
 # 2. comma-separated
 # 3. white space and '_' characters are removed during parsing, e.g. "member_kind" == "member kind" == "memberkind"
 # 4. case-insensitive
 # 5. Duplicates are ignored (first instance wins)
-# 6. Missing value behavior is controlled by the csharp_style_ocre_add_missing_order_values setting.
+# 6. Missing value behavior is controlled by the csharp_style_oc_add_missing_order_values setting.
 
 # The order in which members are sorted according to their accessibility.
 # Default = public,internal,protected internal,protected,private
-csharp_style_ocre_accessibility_order = public,internal,protected internal,protected,private
+csharp_style_oc_accessibility_order = public,internal,protected internal,protected,private
 
 # Defines how missing values in sort order settings are handled.
 # If true, then the missing values are appended in default relative order.
 # If false, then the missing values are ommitted (that sort does not happen).
-csharp_style_ocre_add_missing_order_values = true
+csharp_style_oc_add_missing_order_values = true
 
 # The order in which members are sorted according to their allocation modifier. "instance" = no modifier; the default.
 # Default = const,static,instance
-csharp_style_ocre_allocation_modifier_order = const,static,instance
+csharp_style_oc_allocation_modifier_order = const,static,instance
 
 # The order in which kinds of members are sorted.
 # Default = field,constructor,event,property,operator,method,type
-csharp_style_ocre_member_order = field,constructor,event,property,operator,method,type
+csharp_style_oc_member_order = field,constructor,event,property,operator,method,type
 
 # The order in which operators are sorted.
 # Default = conversion,unary,binary
-csharp_style_ocre_operator_order = conversion,unary,binary
+csharp_style_oc_operator_order = conversion,unary,binary
 
 # The order in which binary operators are sorted.
 # Default = +, -, *, /, %, &, |, ^, <<, >>, return type, arg 1 type, arg 2 type
-csharp_style_ocre_operator_order_binary = +,-,*,/,%,&,|,^,<<,>>,return type,arg 1 type, arg 2 type
+csharp_style_oc_binary_operator_order = +,-,*,/,%,&,|,^,<<,>>,return type,arg 1 type, arg 2 type
 
 # The order in which conversion operators are sorted.
 # Default = implicit,explicit,return type,arg 1 type, arg 2 type
-csharp_style_ocre_operator_order_conversion = implicit,explicit,return type,arg 1 type,arg 2 type
+csharp_style_oc_conversion_operator_order = implicit,explicit,return type,arg 1 type,arg 2 type
 
 # The order in which unary operators are sorted.
 # Default = +, -, !, ~, ++, --, true, false
-csharp_style_ocre_operator_order_unary = +,-,!,~,++,--,true,false,return type,arg type
+csharp_style_oc_unary_operator_order = +,-,!,~,++,--,true,false,return type,arg type
 
 # The order in which strategies are applied.
 # Default = member kind,accessibility,allocation,name
-csharp_style_ocre_strategy_order = member kind,accessibility,allocation,name
+csharp_style_oc_strategy_order = member kind,accessibility,allocation,name
 
 # The order in which types are sorted at the file level and when nested inside another type.
 # Default = delegate,enum,interface,struct,record,class,name
-csharp_style_ocre_type_order = delegate,enum,interface,struct,record,class,name
+csharp_style_oc_type_order = delegate,enum,interface,struct,record,class,name
 
 # Diagnostic severity settings
 
